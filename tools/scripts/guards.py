@@ -148,6 +148,26 @@ def _testing_guard() -> None:
         )
 
 
+def _web_guard() -> None:
+    started = time.monotonic()
+    try:
+        completed = subprocess.run(
+            ["npm", "run", "web:check"],
+            cwd=ROOT,
+            capture_output=True,
+            text=True,
+            timeout=300,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError) as exc:
+        findings.append(Finding("web", f"could not run web:check: {exc}"))
+        return
+    elapsed = time.monotonic() - started
+    notes.append(f"web guard: web:check completed in {elapsed:.0f}s")
+    if completed.returncode != 0:
+        findings.append(Finding("web", "web:check is RED — restore the web app health"))
+
+
 def _type_health_guard() -> None:
     source = ROOT / "src"
     any_count = 0
@@ -188,6 +208,7 @@ def main() -> int:
 
     _docs_guard()
     _testing_guard()
+    _web_guard()
     _type_health_guard()
     _placeholder_guards()
 

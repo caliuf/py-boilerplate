@@ -13,6 +13,7 @@ Questa è la mappa della documentazione viva. L'ordine consigliato è: contratto
 - [`docs/architecture/OVERVIEW.md`](architecture/OVERVIEW.md) — stile architetturale e flusso di una richiesta.
 - [`docs/architecture/BOUNDARIES.md`](architecture/BOUNDARIES.md) — regole di dipendenza verificate da Import Linter.
 - [`docs/architecture/adr/README.md`](architecture/adr/README.md) — registro delle decisioni architetturali.
+- [`apps/web/README.md`](../apps/web/README.md) — UI React/Vite, design system e contratti client.
 
 ## Prodotto
 
@@ -28,6 +29,7 @@ Questa è la mappa della documentazione viva. L'ordine consigliato è: contratto
 - [`docs/development/TESTING.md`](development/TESTING.md) — piramide dei test, coverage e contratti.
 - [`docs/development/WORKFLOWS.md`](development/WORKFLOWS.md) — ciclo di lavoro, gate, PR e Definition of Done.
 - [`docs/development/AGENT-AUTOMATION.md`](development/AGENT-AUTOMATION.md) — briefing, memoria e automazioni per agenti.
+- [`docs/development/CODESCENE.md`](development/CODESCENE.md) — Code Health, MCP e ratchet di progetto.
 - [`docs/development/GITHUB-CLI.md`](development/GITHUB-CLI.md) — ruleset, check e comandi `gh` di sola lettura.
 - [`docs/development/SECURITY.md`](development/SECURITY.md) — modello di sicurezza e supply chain.
 - [`docs/development/NEW-PROJECT.md`](development/NEW-PROJECT.md) — checklist di adozione del boilerplate.

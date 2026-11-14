@@ -11,6 +11,7 @@ Servono:
 - `uv` e `just`; `just install` li installa via mise.
 - `direnv` per il caricamento dell'environment.
 - `gh` per le operazioni GitHub.
+- Node 24 e npm per la UI web e cspell.
 - Su Debian/Ubuntu, i pacchetti di build elencati nella recipe `install`.
 
 Se `mise` non è installato, segui la documentazione ufficiale e riapri la shell. `just` può essere installato anche con il package manager della distribuzione, ma la versione autorevole è quella in `.mise.toml`.
@@ -27,11 +28,13 @@ just doctor
 `just setup` esegue, nell'ordine:
 
 1. installazione dei pacchetti di sistema e del toolchain pinnato;
-2. `uv sync --locked` sull'ambiente del progetto;
-3. attivazione degli hook versionati in `.githooks/`;
-4. creazione di `.env` da `.env.example` se assente;
-5. `direnv allow` sul repository;
-6. inizializzazione e indicizzazione CodeGraph, se il tool è presente.
+2. `npm ci` per il workspace web e il tooling documentale;
+3. installazione del browser Chromium per Playwright;
+4. `uv sync --locked` sull'ambiente Python;
+5. attivazione degli hook versionati in `.githooks/`;
+6. creazione di `.env` da `.env.example` se assente;
+7. `direnv allow` sul repository;
+8. inizializzazione e indicizzazione CodeGraph, se il tool è presente.
 
 `just doctor` deve terminare con exit 0. Se un tool esterno manca, il doctor lo segnala; in CI quel tool è bloccante.
 
@@ -43,13 +46,13 @@ CLI:
 uv run py-boilerplate hello-world --json
 ```
 
-API:
+API e UI:
 
 ```bash
 just dev
 ```
 
-In un'altra shell:
+La UI è su <http://localhost:5100>; il proxy Vite inoltra `/api` all'API su <http://127.0.0.1:8100>. In un'altra shell:
 
 ```bash
 curl -s "http://127.0.0.1:8100/api/hello-world?name=Ada"
@@ -91,7 +94,9 @@ La procedura completa è in [`WORKFLOWS.md`](WORKFLOWS.md).
 | `just test-unit` | Feedback rapido sul dominio e sui contratti |
 | `just test-integration` | API e MCP in-memory |
 | `just test-contract` | Processo CLI e coerenza cross-surface |
-| `just test-e2e` | Processi reali per CLI, API e MCP |
+| `just test-e2e` | Processi reali per CLI, API, MCP e browser Playwright |
+| `just web-check` | Biome, TypeScript, Vitest e build della UI |
+| `just web-test` | Unit test dei contratti client |
 | `just coverage` | Coverage e gate a cricchetto |
 | `just ci` | Pipeline completa locale |
 | `just fix` | Auto-fix Ruff |
@@ -127,6 +132,18 @@ Non abbassare la soglia. Aggiungi test comportamentali per il codice nuovo o rip
 ### Un gate esterno è assente
 
 In locale la recipe stampa un warning e salta il controllo; in CI lo stesso gate è bloccante. Installa il tool con `mise install` e riprova. Non estendere ignore-list per farlo passare.
+
+### Il browser Playwright non è installato
+
+Esegui `npx playwright install chromium`. In CI il browser viene installato con le dipendenze di sistema. Se manca solo il browser, `just web-check` funziona ma `just test-e2e` no.
+
+### La porta 5100 è occupata
+
+Vite usa `strictPort` e fallisce invece di cambiare porta. Ferma il processo che occupa 5100 o imposta `WEB_PORT` a una porta libera. La suite Playwright usa 5100 e 8100: assicurati che siano libere.
+
+### CodeScene non è autenticato
+
+`just precommit` e `just prepush` eseguono i gate CodeScene. Se l'MCP non è autenticato, esegui `npx -y @codescene/codehealth-mcp auth` o chiama il tool MCP `login`. Se il gate non può girare, fermati e riporta il blocker: non aggirarlo.
 
 ### Un test E2E resta appeso
 

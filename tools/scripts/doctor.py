@@ -151,6 +151,35 @@ def _check_direnv() -> None:
         warn(".envrc", "blocked — run `direnv allow`")
 
 
+def _check_local_binary(name: str, detail: str) -> None:
+    if (ROOT / "node_modules/.bin" / name).exists():
+        ok(name, f"installed in node_modules ({detail})")
+    else:
+        warn(name, f"not installed — run `npm ci` ({detail})")
+
+
+def _check_playwright_browsers() -> None:
+    if (Path.home() / ".cache/ms-playwright").exists():
+        ok("playwright browsers")
+    else:
+        warn("playwright browsers", "run `npx playwright install chromium`")
+
+
+def _check_playwright() -> None:
+    if not (ROOT / "node_modules/.bin/playwright").exists():
+        warn("playwright", "not installed — run `npm ci`")
+        return
+    ok("playwright", "installed in node_modules")
+    _check_playwright_browsers()
+
+
+def _check_node_tooling() -> None:
+    _check_optional("node", "web UI and documentation tooling")
+    _check_optional("npm", "installs web, Playwright and cspell dependencies")
+    _check_local_binary("cspell", "documentation spelling")
+    _check_playwright()
+
+
 def _check_github_cli() -> None:
     if not _binary("gh"):
         warn("gh", "optional GitHub CLI not found")
@@ -176,12 +205,7 @@ def main() -> int:
     _check_hooks()
 
     _check_optional("mise", "pinned tool installer")
-    _check_optional("node", "cspell runtime for documentation checks")
-    _check_optional("npm", "installs cspell and the Italian dictionary")
-    if (ROOT / "node_modules/.bin/cspell").exists():
-        ok("cspell", "installed in node_modules")
-    else:
-        warn("cspell", "not installed — run `npm ci`")
+    _check_node_tooling()
     _check_optional("gitleaks", "secret scanning")
     _check_optional("actionlint", "GitHub Actions syntax/semantics")
     _check_optional("zizmor", "GitHub Actions security")

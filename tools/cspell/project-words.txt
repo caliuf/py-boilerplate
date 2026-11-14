@@ -11,6 +11,8 @@ boilerplate
 caliuf
 capsys
 codegraph
+codehealth
+codescene
 committa
 committare
 committate
@@ -57,3 +59,9 @@ versionate
 versionati
 versionato
 zizmor
+Codacy
+Qube
+SonarQube
+codesceneignore
+committati
+deployare

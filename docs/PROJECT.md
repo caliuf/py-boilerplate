@@ -1,17 +1,18 @@
 # Progetto
 
-`py-boilerplate` è un boilerplate Python agent-first. Dimostra un caso d'uso minimo, `hello-world`, esposto su tre superfici coordinate e protetto da un sistema di guide, gate e guard. Serve come punto di partenza verificato per nuovi progetti, non come framework generico.
+`py-boilerplate` è un boilerplate Python agent-first. Dimostra un caso d'uso minimo, `hello-world`, esposto su quattro superfici coordinate — CLI, API HTTP, MCP e UI web — e protetto da un sistema di guide, gate e guard. Serve come punto di partenza verificato per nuovi progetti, non come framework generico.
 
 ## Obiettivo
 
-Fornire una base Python che un agente possa estendere senza degradare il repository: architettura esplicita, validazione ai confini, typing rigoroso, test comportamentali, packaging riproducibile e gate che impediscono scorciatoie.
+Fornire una base Python che un agente possa estendere senza degradare il repository: architettura esplicita, validazione ai confini, typing rigoroso, test comportamentali, packaging riproducibile e gate che impediscono scorciatoie. La UI web è un deployable separato che consuma l'API, non una seconda implementazione del dominio.
 
 ## Non-obiettivi
 
 - Non è un framework applicativo né una libreria pubblica.
-- Non include un database, una coda, un worker o un frontend browser.
+- Non include un database, una coda o un worker.
+- Non include SSR, autenticazione web, routing o stato globale nella UI.
 - Non integra servizi esterni o LLM a runtime.
-- Non pubblica wheel o immagini: il package check è locale e in CI.
+- Non pubblica wheel, immagini o bundle web: il package check e la build restano locali e in CI.
 - Non sostituisce le decisioni di prodotto o architettura di un progetto derivato.
 
 ## Superfici
@@ -21,8 +22,9 @@ Fornire una base Python che un agente possa estendere senza degradare il reposit
 | CLI | adapter driving | `py-boilerplate hello-world [--name <name>] [--json]` | JSON o testo su stdout; errori su stderr | JSON di default in non-TTY; exit code stabili |
 | API HTTP | adapter driving | `GET /api/hello-world?name=<name>` | JSON `{"message": "..."}` oppure `application/problem+json` | FastAPI, sync handler, nessuno stato globale |
 | MCP | adapter driving | tool `hello_world` con `name: string` | structured content `{"message": "..."}` | stdio, tool read-only e idempotente |
+| Web UI | adapter driving browser | campo "Name" + invio o bottone "Greet" | messaggio o errore a schermo | React/Vite su 5100, proxy `/api` su 8100 |
 
-Il comando CLI è registrato in `src/py_boilerplate/entrypoints/cli/registry.py`. La route è in `src/py_boilerplate/entrypoints/api/routes/hello_world.py`. Il tool è in `src/py_boilerplate/entrypoints/mcp/tools/hello_world.py`.
+Il comando CLI è registrato in `src/py_boilerplate/entrypoints/cli/registry.py`. La route è in `src/py_boilerplate/entrypoints/api/routes/hello_world.py`. Il tool è in `src/py_boilerplate/entrypoints/mcp/tools/hello_world.py`. La UI è in `apps/web/`.
 
 ## Bounded context
 
@@ -38,30 +40,36 @@ Il dettaglio è in [`docs/architecture/OVERVIEW.md`](architecture/OVERVIEW.md) e
 
 ## Deployable
 
-La distribuzione è una sola, `py-boilerplate`, con tre entry point:
+Il backend è una distribuzione Python, `py-boilerplate`, con tre entry point:
 
 - `py-boilerplate` — CLI.
 - `py-boilerplate-api` — API HTTP.
 - `py-boilerplate-mcp` — server MCP stdio.
 
-Non esistono servizi separati, code, database o job schedulati. Le tre superfici condividono lo stesso wheel e lo stesso caso d'uso.
+La UI è un deployable statico separato in `apps/web/`, costruito con Vite. In sviluppo parla all'API tramite il proxy Vite; in produzione va servita dallo stesso origin dell'API o dietro un reverse proxy che espone `/api`.
+
+Non esistono servizi separati, code, database o job schedulati. Le superfici condividono lo stesso caso d'uso; la UI condivide il contratto tramite HTTP e OpenAPI, non tramite import Python.
 
 ## Versioni e dipendenze
 
 - `requires-python = ">=3.13"`.
 - Versione pinnata in `.python-version`: `3.14.5`.
 - CI: matrix Python 3.13 e 3.14.
-- Gestione dipendenze: `uv` con `uv.lock` versionato; nessun `requirements.txt` manuale.
-- Dipendenze runtime: FastAPI, MCP Python SDK, Pydantic, pydantic-settings, structlog, Uvicorn.
-- Dipendenze di sviluppo: pytest, coverage, mypy, Ruff, Import Linter, deptry, Bandit, pip-audit, pymarkdown, cspell (tool Node per la documentazione), httpx.
+- Node: `24.19.0`, richiesto per la UI, Playwright e cspell.
+- Gestione dipendenze Python: `uv` con `uv.lock` versionato; nessun `requirements.txt` manuale.
+- Gestione dipendenze web: npm workspace con `package-lock.json` versionato.
+- Dipendenze runtime Python: FastAPI, MCP Python SDK, Pydantic, pydantic-settings, structlog, Uvicorn.
+- Dipendenze web: React 19, ReactDOM 19, Zod 4, Vite 8, TypeScript 7.
+- Dipendenze di sviluppo: pytest, coverage, mypy, Ruff, Import Linter, deptry, Bandit, pip-audit, pymarkdown, cspell, httpx, Biome, Vitest, Playwright.
 
 ## Dati e confini esterni
 
 - Non esiste un data store.
 - Non esistono chiamate a servizi esterni a runtime.
-- L'unico input esterno è quello delle superfici: argomenti CLI, query string HTTP e argomenti del tool MCP.
-- Tutti gli input sono validati a runtime con Pydantic o con lo schema del tool MCP prima di raggiungere il caso d'uso.
+- Gli input esterni sono: argomenti CLI, query string HTTP, argomenti del tool MCP e campo della UI.
+- Tutti gli input sono validati a runtime con Pydantic o con lo schema del tool MCP prima di raggiungere il caso d'uso. La UI valida a sua volta le risposte con Zod.
 - I log non contengono segreti né dati personali. L'evento `saying hello` registra solo il nome validato.
+- CodeScene è uno strumento di sviluppo: non è raggiunto a runtime dall'applicazione.
 
 ## Flussi critici
 
@@ -71,43 +79,55 @@ Non esistono servizi separati, code, database o job schedulati. Le tre superfici
 4. **API invalida**: nome vuoto o troppo lungo → 400 `application/problem+json` con codice `VALIDATION`.
 5. **MCP felice**: schema del tool → `say_hello` → structured content.
 6. **MCP invalido**: schema del tool rifiuta l'input → tool error con `isError: true`.
-7. **Package**: build del wheel → installazione in venv pulito → import fuori dal repository → entry point CLI funzionante.
+7. **Web felice**: input o bottone → fetch `/api/hello-world` → validazione Zod → messaggio a schermo.
+8. **Web invalido**: nome vuoto → 400 Problem Details → messaggio di errore a schermo.
+9. **Package**: build del wheel → installazione in venv pulito → import fuori dal repository → entry point CLI funzionante.
+10. **Web build**: Vite build → bundle statico senza errori TypeScript.
 
 ## Mappa dei comandi
 
 | Comando | Scopo |
 |---|---|
-| `just setup` | Installa toolchain, sincronizza il lock, attiva hook e `.envrc` |
-| `just doctor` | Verifica runtime, tool, lockfile, hook e `.envrc` |
-| `just dev` | Avvia l'API con reload |
-| `just precommit` | Gate rapidi su staged/related |
-| `just prepush` | Analisi statica e suite principali |
+| `just setup` | Installa toolchain, dipendenze Python/web, browser Playwright, hook e `.envrc` |
+| `just doctor` | Verifica runtime, tool, lockfile, hook, browser e `.envrc` |
+| `just dev` | Avvia API e web in sviluppo con reload |
+| `just precommit` | Gate rapidi su staged/related, incluso CodeScene safeguard |
+| `just prepush` | Analisi statica, web check, CodeScene changeset e suite principali |
 | `just ci` | Replica locale della pipeline CI |
-| `just test-unit` | Suite unit |
-| `just test-integration` | Suite integration e contract |
-| `just test-contract` | Contratto CLI e contratto cross-surface |
-| `just test-e2e` | Processi reali per CLI, API e MCP |
-| `just coverage` | Coverage con branch e gate a cricchetto |
-| `just coverage-raise` | Alza le soglie ai valori correnti |
+| `just test-unit` | Suite unit Python |
+| `just test-integration` | Suite integration e contract Python |
+| `just test-contract` | Contratto CLI, cross-surface e contratto web |
+| `just test-e2e` | Processi reali CLI/API/MCP e UI web con Playwright |
+| `just web-dev` | Solo dev server Vite |
+| `just web-build` | Build di produzione della UI |
+| `just web-typecheck` | TypeScript strict di app e test E2E |
+| `just web-test` | Unit test Vitest dei contratti client |
+| `just web-check` | Biome, typecheck, Vitest e build della UI |
+| `just coverage` | Coverage Python con branch e gate a cricchetto |
+| `just coverage-raise` | Alza le soglie Python ai valori correnti |
 | `just smoke` | Smoke test del percorso pubblico |
 | `just package-check` | Build e installazione del wheel |
+| `just codescene-safeguard` | CodeScene sui file staged/modificati |
+| `just codescene-changeset` | CodeScene sul change-set del branch |
+| `just codescene-ratchet` | Ratchet Hotspot/Average del progetto Cloud |
 | `just guards` | Guard report-only |
 | `just docs-check` | Markdown, spelling e link locali |
 | `just workflows-check` | actionlint e zizmor |
 | `just secrets` | Gitleaks sul working tree |
-| `just security` | pip-audit e Bandit |
+| `just security` | pip-audit, Bandit e npm audit |
 
 ## Budget dei gate
 
 | Gate | Budget | Note |
 |---|---|---|
-| `just precommit` | 10 secondi | Solo check rapidi e unit test |
-| `just prepush` | 60 secondi | Analisi statica e suite principali |
-| `just ci` | 10 minuti | Include E2E, package check e compatibilità Python |
-| Suite completa | 10 minuti | Guard di testing |
-| Coverage | 95% linee, 90% branch | Baseline iniziale; può solo salire |
+| `just precommit` | 10 secondi | Check rapidi, web check, unit test e CodeScene safeguard |
+| `just prepush` | 60 secondi | Analisi statica, web check, CodeScene changeset e suite principali |
+| `just ci` | 10 minuti | Include E2E Python, Playwright, package check e compatibilità Python |
+| Suite completa | 10 minuti | Guard di testing e web |
+| Coverage Python | 95% linee, 90% branch | Baseline iniziale; può solo salire |
+| CodeScene | Hotspot 9.10, Average 9.76 | Baseline 2026-11-14; può solo salire |
 
-Il tempo effettivo della suite locale è di pochi secondi; i budget sono un tetto, non un obiettivo.
+I budget sono un tetto, non un obiettivo. CodeScene e Playwright possono richiedere rete o browser e sono misurati a parte.
 
 ## Stato delle feature
 
@@ -117,16 +137,17 @@ Il tempo effettivo della suite locale è di pochi secondi; i budget sono un tett
 | CLI agent-first | Stabile | Contract test su processo reale |
 | API HTTP con Problem Details | Stabile | Integration test |
 | Tool MCP read-only | Stabile | Integration in-memory ed E2E stdio |
+| UI web React/Vite | Stabile | Vitest, Playwright e contract test web |
 | Package e entry point | Stabile | `just package-check` |
+| CodeScene Code Health | Attivo | `just codescene-safeguard` e `just codescene-changeset` |
 | Memory bank | Stabile | `docs/memory/` |
 | Guard report-only | Stabile | `just guards` e `scheduled.yml` |
-| UI browser | Assente per decisione | ADR-0006 |
 | Data store, code, worker | Assenti per decisione | Non-obiettivi |
 
 ## Decisioni aperte
 
 - Licenza del repository: non ancora scelta dal maintainer.
-- Progetto CodeScene: non configurato per questo repository; l'integrazione è opzionale e non è un gate.
-- Pubblicazione del package: non prevista; il package check resta obbligatorio.
+- CodeScene Cloud: progetto `87780` configurato; il ratchet richiede un REST API token, il gate locale richiede OAuth.
+- Pubblicazione del package e deploy della UI: non previsti; package check e build restano obbligatori.
 
 Le decisioni chiuse sono nelle ADR e nelle PDR. Ogni nuova decisione significativa va registrata prima o insieme al codice che la implementa.

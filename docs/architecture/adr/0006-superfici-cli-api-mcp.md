@@ -1,8 +1,10 @@
 # ADR-0006 — Superfici CLI, API e MCP senza UI browser
 
-- Stato: Accettata
+- Stato: Superata da ADR-0009 (limitatamente all'assenza di UI browser)
 - Data: 2026-11-14
 - Supersede: nessuna
+
+> Aggiornamento 2026-11-14: la richiesta esplicita di parità con `ts-boilerplate` ha aggiunto una UI web React/Vite. La decisione sulle altre superfici resta valida; vedi [ADR-0009](0009-ui-web.md).
 
 ## Contesto
 

@@ -24,6 +24,7 @@ jobs:
           persist-credentials: false
       - uses: jdx/mise-action@b44d12e7d0d8ee7461bb893e1b1993500433185b # tag: v5.2.7
       - run: uv sync --locked
+      - run: npm ci
       - name: Run guards (report-only)
         run: just guards | tee guards-report.md
       - name: Upload report

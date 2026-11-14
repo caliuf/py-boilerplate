@@ -11,6 +11,16 @@ updates:
       # Compatible updates batched; major updates always get explicit review.
       patch-and-minor:
         update-types: ["patch", "minor"]
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 5
+    groups:
+      web-patch-and-minor:
+        update-types: ["patch", "minor"]
   - package-ecosystem: github-actions
     directory: /
     schedule:

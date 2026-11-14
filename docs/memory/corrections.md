@@ -12,3 +12,6 @@ Registro delle correzioni e dei vincoli scoperti durante il lavoro. Una correzio
 - I test dei wrapper devono risolvere il repository root da `tests/support/process.py` con `parents[2]`, non `parents[1]`.
 - Pymarkdown non deve scansionare `docs/init/`: il Vademecum è un blueprint congelato e non segue le regole della documentazione viva.
 - Il test dei wrapper deve isolare `uv run` con `UV_PROJECT_ENVIRONMENT` e `UV_PYTHON`: altrimenti può ricreare `.venv` mentre pytest usa l'ambiente corrente, causando `ModuleNotFoundError` per le dipendenze lazy importate (osservato con `jsonschema` e il client MCP su Python 3.13).
+- La UI aggiunge un secondo ecosistema (npm/React/Vite): il workspace è `apps/web`, `npm ci` installa root e UI, Playwright usa un browser in cache utente. Vite gira con `strictPort` per non spostare silenziosamente la porta 5100.
+- CodeScene richiede l'MCP per i gate locali e un REST token per il ratchet. Il progetto Cloud è `87780`; la baseline misurata è Hotspot 9.10 e Average 9.76. Il gate locale ha bloccato un degrado di `doctor.py` introdotto dall'aggiunta dei controlli Playwright: la logica è stata estratta in funzioni piccole.
+- `.kilo/` è escluso da Ruff, mypy e CodeScene: è tooling agentico, non codice del package.

@@ -1,13 +1,7 @@
 {
   "version": "0.2",
   "language": "en,it",
-  "dictionaries": [
-    "en_us",
-    "it-it",
-    "softwareTerms",
-    "python",
-    "project-words"
-  ],
+  "dictionaries": ["en_us", "it-it", "softwareTerms", "python", "project-words"],
   "dictionaryDefinitions": [
     {
       "name": "project-words",
@@ -25,11 +19,15 @@
     "node_modules/**",
     "tmp/**",
     "uv.lock",
-    "package-lock.json"
+    "package-lock.json",
+    "playwright-report/**",
+    "test-results/**"
   ],
   "files": [
     "**/*.md",
     "**/*.py",
+    "**/*.ts",
+    "**/*.tsx",
     "**/*.toml",
     "**/*.yml",
     "**/*.yaml",
@@ -37,7 +35,5 @@
     "justfile",
     "bin/*"
   ],
-  "import": [
-    "@cspell/dict-it-it/cspell-ext.json"
-  ]
+  "import": ["@cspell/dict-it-it/cspell-ext.json"]
 }

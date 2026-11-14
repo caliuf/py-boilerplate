@@ -2,7 +2,7 @@
 
 ## Layout
 
-Il package importabile sta in `src/py_boilerplate/`. I test stanno in `tests/` e non sono importabili da `src/`. Non usare flat layout, `sys.path` hack o import relativi alla working directory.
+Il package importabile sta in `src/py_boilerplate/`. I test Python stanno in `tests/` e non sono importabili da `src/`. La UI sta in `apps/web/` come app Node separata. Non usare flat layout, `sys.path` hack o import relativi alla working directory.
 
 Un modulo nuovo deve avere un confine chiaro:
 
@@ -20,6 +20,19 @@ La direzione è `entrypoints → adapters → application → ports → domain`,
 - Nessun import incrociato tra CLI, API e MCP.
 - Nessun service locator, container DI o registry magico.
 - Nessuno stato globale mutabile.
+
+## Web e TypeScript
+
+La UI è un'app React/Vite separata, con TypeScript strict e Biome come formatter. Le regole sono:
+
+- `design-system/` contiene i primitivi (`Page`, `TextInput`, `Button`, `Message`, CSS). Le feature non creano markup grezzo per input, bottoni, main o messaggi.
+- `features/<nome>/` contiene pagina, hook di stato server e client API. Non contiene logica di dominio.
+- Il client valida le risposte esterne con Zod; non usare `as` o `cast` per fidarsi del payload.
+- `contracts.ts` è il mirror client-side dei contratti Pydantic/OpenAPI; il contract test Python verifica i vincoli condivisi.
+- La UI parla all'API solo via HTTP e non importa codice Python.
+- `tsc` è autorevole; `just web-check` esegue Biome, typecheck, Vitest e build.
+- I test dei contratti client stanno accanto al modulo (`contracts.test.ts`); i flussi browser stanno in `tests/e2e/*.spec.ts` e usano Playwright.
+- La UI è keyboard-first: Enter invia, il focus è visibile, i controlli hanno label accessibili.
 
 ## Typing
 
@@ -99,4 +112,6 @@ I dati interni che non attraversano un confine possono usare dataclass standard.
 - Non ci sono `print()`, debug, ignore o suppression senza motivo.
 - Non ci sono import vietati o cicli.
 - La documentazione e le decisioni sono aggiornate.
+- `just web-check` è verde.
+- I flussi UI nuovi hanno un test Playwright o una motivazione esplicita.
 - `just precommit` è verde.

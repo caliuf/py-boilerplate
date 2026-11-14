@@ -24,6 +24,7 @@ setup:
     #!/usr/bin/env bash
     set -euo pipefail
     just install
+    npx playwright install chromium
     uv sync --locked
     git config core.hooksPath .githooks
     if [ ! -f .env ]; then cp .env.example .env; fi
@@ -50,11 +51,35 @@ pull:
 doctor:
     uv run python tools/scripts/doctor.py
 
-# Avvia l'API in sviluppo con reload
+# Avvia API e web in sviluppo con reload
 dev:
     #!/usr/bin/env bash
     set -euo pipefail
-    uv run uvicorn py_boilerplate.entrypoints.api.main:build_app --factory --reload --host "${API_HOST:-127.0.0.1}" --port "${API_PORT:-8100}"
+    uv run uvicorn py_boilerplate.entrypoints.api.main:build_app --factory --reload --host "${API_HOST:-127.0.0.1}" --port "${API_PORT:-8100}" &
+    api_pid=$!
+    trap 'kill "$api_pid" 2>/dev/null || true' EXIT
+    npm run web:dev
+
+# Web: dev server Vite
+web-dev:
+    npm run web:dev
+
+# Web: build di produzione
+web-build:
+    npm run web:build
+
+# Web: typecheck TypeScript (app e test E2E)
+web-typecheck:
+    npm run web:typecheck
+    npm run tests:typecheck
+
+# Web: unit test dei contratti client
+web-test:
+    npm run web:test
+
+# Web: formattazione, typecheck, test e build
+web-check:
+    npm run web:check
 
 # Python del progetto
 python:
@@ -68,6 +93,7 @@ python:
 fix:
     uv run ruff check --fix .
     uv run ruff format .
+    npm run web:format
 
 # Formattazione (read-only)
 format-check:
@@ -94,7 +120,7 @@ arch:
 docs-check:
     #!/usr/bin/env bash
     set -euo pipefail
-    uv run pymarkdown --config .pymarkdown.json scan -r --respect-gitignore -e "docs/init/**" docs src/py_boilerplate README.md AGENTS.md CONTRIBUTING.md SECURITY.md
+    uv run pymarkdown --config .pymarkdown.json scan -r --respect-gitignore -e "docs/init/**" docs src/py_boilerplate apps/web README.md AGENTS.md CONTRIBUTING.md SECURITY.md
     if command -v npx >/dev/null 2>&1 && [ -d node_modules ]; then
       npx --no-install cspell lint --no-progress
     else
@@ -183,6 +209,7 @@ shell-check:
 security:
     uv run pip-audit
     uv run bandit -q -r src
+    npm audit --omit=dev --audit-level=high
 
 # ---------------------------------------------------------------------------------
 # Tests
@@ -210,9 +237,10 @@ test-related:
       echo "No staged Python changes — unit suite skipped."
     fi
 
-# E2E su processi reali: CLI, API HTTP e MCP stdio
+# E2E su processi reali: CLI, API HTTP, MCP stdio e UI web (Playwright)
 test-e2e:
     uv run pytest tests/e2e -m e2e -q
+    npm run test:e2e
 
 # Coverage con branch, poi gate a cricchetto
 coverage:
@@ -249,6 +277,18 @@ guards:
 # Gates
 # ---------------------------------------------------------------------------------
 
+# CodeScene Code Health gate sui file staged/modificati (locale, dati freschi)
+codescene-safeguard:
+    uv run python .kilo/scripts/codescene_gate.py staged
+
+# CodeScene Code Health gate sul change-set del branch rispetto a una base
+codescene-changeset base="origin/main":
+    uv run python .kilo/scripts/codescene_gate.py changeset --base-ref {{ base }}
+
+# CodeScene ratchet progetto (Hotspot e Average Code Health dal Cloud)
+codescene-ratchet:
+    bash tools/scripts/codescene-ratchet.sh
+
 # Check rapidi su staged/related (pre-commit hook)
 precommit:
     #!/usr/bin/env bash
@@ -259,10 +299,12 @@ precommit:
       exit 0
     fi
     tools/scripts/run-checks.sh \
+      "just codescene-safeguard" \
       "just format-check" \
       "just lint" \
       "just shell-check" \
       "just docs-check" \
+      "just web-check" \
       "just secrets-staged" \
       "just test-related"
 
@@ -284,9 +326,11 @@ prepush:
       "just dead-code" \
       "just arch" \
       "just docs-check" \
+      "just web-check" \
       "just workflows-check" \
       "just secrets" \
-      "just security" || rc=1
+      "just security" \
+      "just codescene-changeset" || rc=1
     tools/scripts/run-checks.sh \
       "just test-unit" \
       "just test-integration" \
@@ -295,7 +339,7 @@ prepush:
     exit "$rc"
 
 # Replica locale esatta della pipeline CI
-ci: format-check lint shell-check typecheck dead-code arch docs-check workflows-check secrets security
+ci: format-check lint shell-check typecheck dead-code arch docs-check web-check workflows-check secrets security
     just test-unit
     just test-integration
     just test-contract

@@ -46,6 +46,22 @@ L'ordine degli strati è deliberato: l'application layer dipende dalle porte, no
 
 Le regole sono più restrittive della tabella dove Import Linter lo consente: per esempio il dominio non può importare nemmeno `contracts`, anche se in teoria sarebbe un tipo condiviso.
 
+## Confine della UI web
+
+`apps/web` è un'app Node/React separata e non fa parte del root package Python. Le regole non sono verificate da Import Linter ma dai gate della UI:
+
+| Regola | Verifica |
+|---|---|
+| La UI non importa `src/py_boilerplate` né codice Python | Code review, struttura del workspace, assenza di path Python in `apps/web` |
+| La UI parla all'API solo via HTTP (`/api`) | `hello-world-api.ts`, Playwright E2E |
+| Le risposte esterne sono validate a runtime con Zod | `contracts.ts`, Vitest, `test_web_contract.py` |
+| Le feature usano solo il design system | struttura `features/greeting` + `design-system` |
+| La UI non duplica il dominio | il caso d'uso vive solo in `greetings/application` |
+| TypeScript strict e build | `just web-check` |
+| Flussi browser reali | Playwright E2E |
+
+`apps/web/src/contracts.ts` è un mirror client-side, non una seconda fonte canonica. La fonte canonica resta Pydantic/OpenAPI; il contract test Python verifica che i vincoli condivisi non divergano.
+
 ## Regole non automate ma obbligatorie
 
 - Nessun `sys.path` hack, nessun import relativo al working directory, nessun import shadowing.
@@ -72,6 +88,7 @@ Le regole sono più restrittive della tabella dove Import Linter lo consente: pe
 4. Aggiungi il contract test che verifica la stessa tassonomia errori delle altre superfici.
 5. Aggiorna la mappa delle superfici in `docs/PROJECT.md`.
 6. Registra una ADR se la superficie introduce un deployable, un framework o un modello di esecuzione nuovo.
+7. Se la superficie è una UI web, aggiungi il design system, la validazione Zod delle risposte, il typecheck e l'E2E Playwright; aggiorna il contract test web.
 
 ## Verifica
 

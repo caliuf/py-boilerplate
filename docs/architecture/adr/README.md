@@ -11,9 +11,11 @@ Le ADR registrano decisioni architetturali durature. Una decisione accettata non
 | [0003](0003-validazione-pydantic.md) | Validazione runtime con Pydantic | Accettata |
 | [0004](0004-tassonomia-errori.md) | Tassonomia errori e mapping sulle superfici | Accettata |
 | [0005](0005-ci-consolidata.md) | CI consolidata e slow lane di sicurezza | Accettata |
-| [0006](0006-superfici-cli-api-mcp.md) | Superfici CLI, API e MCP senza UI browser | Accettata |
+| [0006](0006-superfici-cli-api-mcp.md) | Superfici CLI, API e MCP senza UI browser | Superata da ADR-0009 |
 | [0007](0007-wrapper-bin-direnv.md) | Wrapper `bin/` e stratificazione environment con direnv | Accettata |
 | [0008](0008-memory-bank.md) | Memory bank portabile in `docs/memory/` | Accettata |
+| [0009](0009-ui-web.md) | UI web React/Vite e Playwright | Accettata |
+| [0010](0010-codescene.md) | CodeScene Code Health come gate locale | Accettata |
 
 ## Quando scrivere una ADR
 
