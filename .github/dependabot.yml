@@ -21,6 +21,10 @@ updates:
     groups:
       web-patch-and-minor:
         update-types: ["patch", "minor"]
+    ignore:
+      # The runtime stays on Node 24; @types/node must match it.
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
   - package-ecosystem: github-actions
     directory: /
     schedule:
