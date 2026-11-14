@@ -4,6 +4,12 @@ version = "0.1.0"
 description = "Boilerplate Python per progetti sviluppati interamente tramite agenti AI"
 readme = "README.md"
 requires-python = ">=3.13"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Typing :: Typed",
+]
 dependencies = [
   "fastapi>=0.162.7,<0.163",
   "mcp>=2.3.0,<3",
