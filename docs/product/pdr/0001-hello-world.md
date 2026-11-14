@@ -3,6 +3,7 @@
 - Stato: Accettata
 - Data: 2026-11-14
 - Supersede: nessuna
+- Aggiornamento: [PDR-0002](0002-ui-web.md) aggiunge la UI web; il resto resta valido.
 
 ## Contesto
 

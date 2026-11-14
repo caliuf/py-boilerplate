@@ -43,11 +43,18 @@ Lo script:
 
 1. verifica di non essere su `main`;
 2. verifica che gli hook versionati siano attivi;
-3. committa i file staged, lasciando che l'hook esegua `just precommit`;
-4. pusha, lasciando che l'hook esegua `just prepush`;
+3. committa i file staged, lasciando che l'hook esegua `just precommit` (incluso CodeScene safeguard);
+4. pusha, lasciando che l'hook esegua `just prepush` (incluso CodeScene changeset);
 5. apre una PR se non ne esiste già una per il branch.
 
 Non duplicare i gate a mano prima dello script: gli hook li eseguono già. Se un gate fallisce, lo script si ferma.
+
+## CodeScene e UI
+
+- Prima di un commit, `just codescene-safeguard` deve passare. Se l'MCP non è autenticato, esegui `npx -y @codescene/codehealth-mcp auth` e riprova; non aggirare il gate.
+- Prima di un push, `just codescene-changeset` confronta il branch con `origin/main`.
+- Per una modifica UI, esegui `just web-check` e `just test-e2e`; Playwright avvia API e Vite reali.
+- Il progetto CodeScene è `87780`; la guida è [`CODESCENE.md`](CODESCENE.md).
 
 ## PR e issue
 
@@ -80,7 +87,7 @@ Il report deve essere evidence-based:
 2. test aggiunti o modificati;
 3. comandi eseguiti e output verbatim;
 4. delta di coverage e qualità;
-5. risultati di sicurezza e analisi statica;
+5. risultati di sicurezza, analisi statica, web check, Playwright e CodeScene;
 6. ADR/PDR e documentazione aggiornate;
 7. versione Python e modifiche al lockfile;
 8. rischi residui e domande aperte.

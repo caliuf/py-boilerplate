@@ -51,6 +51,7 @@ packages = ["src/py_boilerplate"]
 target-version = "py313"
 line-length = 100
 src = ["src", "tests", "tools"]
+exclude = [".kilo"]
 
 [tool.ruff.lint]
 select = [
@@ -89,6 +90,7 @@ show_error_codes = true
 pretty = true
 mypy_path = "src"
 files = ["src", "tests", "tools"]
+exclude = ["^\\.kilo/"]
 plugins = ["pydantic.mypy"]
 
 [tool.pytest.ini_options]
@@ -124,7 +126,7 @@ output = "coverage/coverage.json"
 pretty_print = true
 
 [tool.deptry]
-extend_exclude = ["tests", "tools", "docs"]
+extend_exclude = ["tests", "tools", "docs", ".kilo"]
 known_first_party = ["py_boilerplate"]
 package_module_name_map = { "py-boilerplate" = "py_boilerplate" }
 

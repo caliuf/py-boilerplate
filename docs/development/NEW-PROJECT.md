@@ -20,6 +20,9 @@ Cerca e sostituisci in modo controllato:
 | `py_boilerplate` | nome del package Python |
 | `py-boilerplate-api` | entry point API, se resta |
 | `py-boilerplate-mcp` | entry point MCP, se resta |
+| `@py-boilerplate/web` | nome del workspace web |
+| `py-boilerplate` in `apps/web/index.html` e `GreetingPage` | titolo della UI |
+| `87780` in `.kilo/kilo.jsonc`, `CODESCENE.md` e memoria | project id CodeScene del nuovo progetto |
 | `hello-world` | nome del primo caso d'uso reale |
 | `HelloWorldInput`, `HelloWorldOutput` | DTO reali |
 | `urn:py-boilerplate:error:` | URN del progetto |
@@ -35,6 +38,7 @@ Quando il progetto non è più un boilerplate:
 - rimuovi `docs/init/` e il riferimento nell'indice;
 - rimuovi `docs/development/NEW-PROJECT.md` o sostituiscilo con la guida del progetto;
 - rimuovi le ADR/PDR dimostrative se non descrivono più il progetto reale;
+- se non hai una UI, rimuovi `apps/web/`, Playwright, `playwright.config.ts`, i test `.spec.ts` e le recipe web;
 - mantieni la memory bank e aggiornala.
 
 ## 4. Configurare GitHub
@@ -48,19 +52,34 @@ Quando il progetto non è più un boilerplate:
 ## 5. Configurare la qualità
 
 - Mantieni Ruff, mypy strict, pytest, coverage, Import Linter e deptry.
+- Mantieni Biome, TypeScript strict, Vitest e Playwright se adotti la UI.
+- Aggiorna il mirror Zod `apps/web/src/contracts.ts` e il contract test web quando cambi i contratti.
 - Aggiorna i contratti Import Linter quando cambi i bounded context.
 - Imposta la baseline di coverage sul valore reale del nuovo progetto, senza abbassare le soglie esistenti.
-- Aggiorna `.python-version` e la matrix CI solo dopo aver verificato dipendenze e wheel.
+- Aggiorna `.python-version`, la matrix CI e `package.json` solo dopo aver verificato dipendenze e wheel.
 - Aggiungi una ADR per ogni dipendenza significativa.
+- Imposta `.codescene-thresholds` sulla baseline reale del nuovo progetto; non riusare i valori del boilerplate.
 
 ## 6. Configurare l'ambiente
 
 - Aggiorna `.env.default` e `.env.example` con le variabili reali.
 - Non committare segreti.
 - Aggiorna `bin/` con il nome del comando reale.
+- Aggiorna `WEB_PORT` e le porte del `playwright.config.ts` se cambi la UI.
 - Verifica `just setup` e `just doctor` su una clone pulita.
 
-## 7. Prima esecuzione completa
+## 7. CodeScene (se adottato)
+
+Se mantieni CodeScene:
+
+1. Crea un progetto Cloud nuovo che punta al remote del nuovo repository; non riusare `87780`.
+2. Aggiorna `CS_DEFAULT_PROJECT_ID` in `.kilo/kilo.jsonc`, `CODESCENE.md`, `AGENTS.md` e la memoria.
+3. Autentica l'MCP: `npx -y @codescene/codehealth-mcp auth`.
+4. Crea un REST API token e salvalo in `~/.codescene/token` o `CODESCENE_API_TOKEN` (fuori dal git).
+5. Misura la baseline reale e aggiorna `.codescene-thresholds`; poi esegui `just codescene-ratchet`.
+6. Se non adotti CodeScene, rimuovi `.kilo/`, le recipe `codescene-*`, i riferimenti in hook, AGENTS, ADR, docs e memoria.
+
+## 8. Prima esecuzione completa
 
 ```bash
 just setup
@@ -68,7 +87,7 @@ just doctor
 just ci
 ```
 
-`just ci` deve passare su una clone pulita, senza modifiche non committate e senza tool mancanti.
+`just ci` deve passare su una clone pulita, senza modifiche non committate e senza tool mancanti. Include Playwright: assicurati che il browser Chromium sia installato e che le porte 5100 e 8100 siano libere.
 
 ## 8. Primo ciclo agentico reale
 

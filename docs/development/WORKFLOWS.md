@@ -34,9 +34,9 @@ Qualsiasi dubbio risolve in `full`: nessun git, nessun upstream, diff vuoto o pa
 
 | Gate | Quando | Contenuto |
 |---|---|---|
-| `just precommit` | Hook di commit | Formattazione, lint, shellcheck, docs, secret staged, unit |
-| `just prepush` | Hook di push | Analisi statica completa, sicurezza, suite principali, coverage |
-| `just ci` | Locale o CI | Tutto, inclusi E2E, package check e compatibilità Python |
+| `just precommit` | Hook di commit | Formattazione, lint, shellcheck, docs, web check, CodeScene safeguard, secret staged, unit |
+| `just prepush` | Hook di push | Analisi statica completa, web check, CodeScene changeset, sicurezza, suite principali, coverage |
+| `just ci` | Locale o CI | Tutto, inclusi E2E Python, Playwright, package check e compatibilità Python |
 
 Non usare `--no-verify`, `SKIP` o `git commit -n`. Se un hook fallisce, correggi il problema.
 
@@ -83,6 +83,11 @@ Un task è completo solo se:
 - non ci sono import side effect o stato globale non intenzionale;
 - ogni nuovo caso d'uso è esposto sulle superfici decise e la mappa in `docs/PROJECT.md` è aggiornata;
 - documentazione, ADR e PDR sono aggiornate nello stesso commit;
+- `just web-check` passa (Biome, TypeScript, Vitest, build);
+- i flussi UI nuovi hanno un test Playwright o una motivazione esplicita;
+- il Code Health dei file toccati non è degradato (`just codescene-safeguard` / `just codescene-changeset`);
+- nessun token CodeScene o configurazione OAuth è finito nel repository;
+- `npm audit --omit=dev --audit-level=high` è verde;
 - `just prepush` passa;
 - il report finale cita l'output reale;
 - il messaggio in `tmp/commit-message.md` descrive l'intero diff;
@@ -96,3 +101,9 @@ Il progetto non pubblica wheel né immagini e non esegue deploy. Il "rilascio" �
 ## Retrospettiva
 
 Periodicamente, e comunque dopo un ciclo intenso, esegui una retrospettiva sui fallimenti del processo: gate ignorati, istruzioni inefficaci, test fragili, API allucinate, context rot. Le conclusioni diventano modifiche a `AGENTS.md`, alle guide o ai guard, tramite PR. Il sistema migliora per evidenza, non per accumulo di regole.
+
+## CodeScene e UI
+
+`just precommit` esegue `just codescene-safeguard` sui file staged/modificati; `just prepush` esegue `just codescene-changeset` sul branch. Se l'MCP CodeScene non è autenticato, il gate fallisce chiuso: autentica o riporta il blocker. Non abbassare `.codescene-thresholds`.
+
+La UI ha un ciclo separato: `just web-check` per formattazione, typecheck, test e build; `just test-e2e` per i flussi Playwright. In CI il job `e2e` installa Chromium e avvia API e Vite tramite `playwright.config.ts`.

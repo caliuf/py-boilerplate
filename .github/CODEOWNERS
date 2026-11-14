@@ -30,6 +30,14 @@
 /.mise.toml @caliuf
 /tools/scripts/ @caliuf
 /tools/cspell/ @caliuf
+/apps/web/ @caliuf
+/playwright.config.ts @caliuf
+/biome.json @caliuf
+/tsconfig.base.json @caliuf
+/tests/tsconfig.json @caliuf
+/.kilo/ @caliuf
+/.codesceneignore @caliuf
+/.codescene-thresholds @caliuf
 /conventions.conf @caliuf
 
 # Frozen blueprint (never modified in ordinary development)

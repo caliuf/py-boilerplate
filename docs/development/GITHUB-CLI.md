@@ -29,7 +29,7 @@ Il ruleset richiede:
 | `integration-and-coverage` | `ci.yml` | Suite non-E2E, coverage, package check |
 | `python-compatibility (3.13)` | `ci.yml` | Matrix Python 3.13 |
 | `python-compatibility (3.14)` | `ci.yml` | Matrix Python 3.14 |
-| `e2e` | `ci.yml` | Processi reali CLI, API e MCP |
+| `e2e` | `ci.yml` | Processi reali CLI, API e MCP, più Playwright sulla UI |
 | `dependency-review` | `ci.yml` | Review delle dipendenze sulle PR pubbliche |
 
 I nomi devono corrispondere ai job. Se rinomini un job, aggiorna il ruleset nella stessa PR.
@@ -74,7 +74,13 @@ gh pr view <numero>
 gh pr checks <numero>
 ```
 
-Un aggiornamento patch/minor può essere raggruppato; un major richiede review esplicita, lettura del changelog e suite completa. Controlla sempre versione risolta, licenza, provenienza, vulnerabilità e wheel.
+Dependabot copre l'ecosistema `uv` (Python) e `npm` (root workspace, `apps/web` e tooling documentale), oltre a `github-actions`. Un aggiornamento patch/minor può essere raggruppato; un major richiede review esplicita, lettura del changelog e suite completa. Controlla sempre versione risolta, licenza, provenienza, vulnerabilità e wheel.
+
+## CodeScene
+
+Il progetto CodeScene Cloud è `87780`: <https://codescene.io/projects/87780/jobs/8428088>. La configurazione MCP sta in `.kilo/kilo.jsonc`; i gate locali sono `just codescene-safeguard`, `just codescene-changeset` e `just codescene-ratchet`. I dettagli sono in [`CODESCENE.md`](CODESCENE.md).
+
+CodeScene non è un check richiesto dal ruleset: richiede OAuth locale e non va esposto in CI. Il ratchet può essere eseguito in un job dedicato con il secret `CODESCENE_API_TOKEN`.
 
 ## Sicurezza
 

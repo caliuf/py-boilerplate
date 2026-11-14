@@ -1,0 +1,4 @@
+# Baseline misurata dal progetto CodeScene 87780 (job 8428088) il 2026-11-14.
+# Le soglie possono solo salire: aggiornale con `just codescene-ratchet`.
+HOTSPOT_THRESHOLD=9.10
+AVERAGE_THRESHOLD=9.76

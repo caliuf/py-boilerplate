@@ -1,6 +1,6 @@
 # Architettura
 
-Il progetto è un modular monolith con una sola distribuzione Python e tre superfici di ingresso. L'architettura è deliberatamente piccola, ma i confini sono reali e verificati automaticamente.
+Il progetto è un modular monolith con una sola distribuzione Python per il backend e quattro superfici di ingresso, di cui una UI web separata. L'architettura è deliberatamente piccola, ma i confini sono reali e verificati automaticamente.
 
 ## Stile
 
@@ -19,6 +19,7 @@ flowchart TD
     CLI[entrypoints/cli] --> APP[greetings/application]
     API[entrypoints/api] --> APP
     MCP[entrypoints/mcp] --> APP
+    WEB[apps/web] -->|HTTP /api| API
     CLI --> ADP[adapters/logging]
     API --> ADP
     MCP --> ADP
@@ -46,6 +47,11 @@ src/py_boilerplate/
     cli/            # parsing, comando, renderer, registry, composition root
     api/            # factory FastAPI, route, error mapper, composition root
     mcp/            # factory MCPServer, tool, composition root
+
+apps/web/
+  src/design-system/      # Page, TextInput, Button, Message, CSS
+  src/features/greeting/  # pagina, hook di stato server, client API
+  src/contracts.ts        # mirror Zod dei contratti Pydantic/OpenAPI
 ```
 
 Ogni entrypoint è un adapter driving. Il composition root costruisce logger e dipendenze, invoca il caso d'uso e mappa il risultato sul canale. Nessun entrypoint importa un altro entrypoint.
@@ -60,7 +66,9 @@ Esempio API:
 4. In caso di successo, `say_hello` chiama `greet` e registra l'evento tramite la porta `Logger`.
 5. La route restituisce `HelloWorldOutput`, serializzato da FastAPI.
 
-CLI e MCP seguono lo stesso schema, cambiando solo parsing, validazione del confine e rendering. La logica del caso d'uso è una sola.
+CLI e MCP seguono lo stesso schema, cambiando solo parsing, validazione del confine e rendering. La UI web fa la stessa cosa nel browser: input, fetch `/api/hello-world`, validazione Zod della risposta e rendering nel design system. La logica del caso d'uso è una sola.
+
+La UI non importa Python e non condivide un package TypeScript: `apps/web/src/contracts.ts` è il mirror client-side dei contratti, usato per la validazione runtime. Il contract test `tests/contract/test_web_contract.py` verifica che OpenAPI e i vincoli condivisi restino coerenti.
 
 ## Contratti
 
@@ -100,6 +108,7 @@ La versione di Python è pinnata in `.python-version` e le dipendenze in `uv.loc
 - Il caso d'uso e il dominio sono sincroni e veloci.
 - La route FastAPI è `def`, quindi gira nel threadpool e non blocca l'event loop.
 - Il server MCP usa il trasporto stdio dell'SDK, che gestisce l'event loop e i task del protocollo.
+- La UI usa `fetch` nel browser; non esiste un server Node in produzione.
 - Non esistono task `asyncio` fire-and-forget, code o worker.
 
 Se in futuro nasce un confine realmente asincrono, deve avere ownership esplicita, timeout, cancellazione e test dedicati, come richiesto dal Vademecum.
@@ -109,7 +118,8 @@ Se in futuro nasce un confine realmente asincrono, deve avere ownership esplicit
 - Unit test su dominio, contratti, renderer e adapter.
 - Integration test su API con `TestClient` e su MCP con trasporto in-memory.
 - Contract test su processo CLI reale e sulla coerenza tra superfici.
-- E2E su processi reali: CLI, API HTTP e MCP stdio.
-- Import Linter verifica i confini; deptry verifica le dipendenze dichiarate.
+- E2E su processi reali: CLI, API HTTP, MCP stdio e UI web con Playwright.
+- Vitest copre i contratti client e la loro validazione.
+- Import Linter verifica i confini Python; deptry verifica le dipendenze dichiarate.
 
 La strategia completa è in [`docs/development/TESTING.md`](../development/TESTING.md).

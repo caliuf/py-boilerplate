@@ -1,10 +1,32 @@
 {
-  "name": "py-boilerplate-docs-tooling",
-  "version": "0.0.0",
+  "name": "py-boilerplate",
+  "version": "0.1.0",
   "private": true,
-  "description": "Dev-only tooling for documentation checks (cspell).",
+  "description": "Python agent-first boilerplate with CLI, API, MCP and web UI",
+  "workspaces": [
+    "apps/web"
+  ],
+  "engines": {
+    "node": "^24.0.0"
+  },
+  "scripts": {
+    "web:dev": "npm --workspace @py-boilerplate/web run dev",
+    "web:build": "npm --workspace @py-boilerplate/web run build",
+    "web:typecheck": "npm --workspace @py-boilerplate/web run typecheck",
+    "web:test": "npm --workspace @py-boilerplate/web run test",
+    "web:format": "biome check --write apps/web tests/e2e playwright.config.ts tsconfig.base.json biome.json cspell.json package.json apps/web/package.json apps/web/tsconfig.json tests/tsconfig.json",
+    "web:format-check": "biome check apps/web tests/e2e playwright.config.ts tsconfig.base.json biome.json cspell.json package.json apps/web/package.json apps/web/tsconfig.json tests/tsconfig.json",
+    "tests:typecheck": "tsc -p tests/tsconfig.json",
+    "web:check": "npm run web:format-check && npm run web:typecheck && npm run tests:typecheck && npm run web:test && npm run web:build",
+    "test:e2e": "playwright test --config playwright.config.ts",
+    "docs:spell": "cspell lint --no-progress"
+  },
   "devDependencies": {
+    "@biomejs/biome": "2.6.7",
     "@cspell/dict-it-it": "3.1.7",
-    "cspell": "10.5.0"
+    "@playwright/test": "1.65.1",
+    "@types/node": "24.19.2",
+    "cspell": "10.5.0",
+    "typescript": "7.0.2"
   }
 }

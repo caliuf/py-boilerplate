@@ -1,0 +1,11 @@
+# Path ignorate da CodeScene.
+# Il blueprint congelato, gli artefatti generati e il tooling agentico non
+# fanno parte del codice applicativo misurato dal ratchet.
+docs/init/
+.venv/
+.venv-*/
+node_modules/
+coverage/
+dist/
+build/
+.kilo/
