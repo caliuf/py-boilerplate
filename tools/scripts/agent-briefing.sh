@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+# agent-briefing.sh — dump di contesto one-shot per l'inizio di un task.
+#
+# Stampa in un'unica chiamata ciò che serve prima di toccare il codice:
+# identità repo/worktree, stato git, tooling dei gate, memoria del progetto,
+# PR e issue aperte. Read-only: non modifica il working tree.
+#
+# Usage: tools/scripts/agent-briefing.sh [--no-prs]
+set -euo pipefail
+
+if [ -d "$HOME/.local/share/mise/shims" ]; then
+  export PATH="$HOME/.local/share/mise/shims:$PATH"
+fi
+
+repo_root=$(git rev-parse --show-toplevel)
+cd "$repo_root"
+
+with_prs=1
+for arg in "$@"; do
+  case "$arg" in
+    --no-prs) with_prs=0 ;;
+    *) echo "Unknown argument: $arg" >&2; exit 2 ;;
+  esac
+done
+
+section() {
+  printf '\n=== %s ===\n' "$1"
+}
+
+section "Repo"
+printf 'root:    %s\n' "$repo_root"
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  common_dir=$(git rev-parse --git-common-dir 2>/dev/null || true)
+  git_dir=$(git rev-parse --git-dir)
+  if [ "$git_dir" != "$common_dir" ]; then
+    printf 'worktree: yes (main repo: %s)\n' "$(cd "$common_dir/.." && pwd)"
+  else
+    printf 'worktree: no (main checkout)\n'
+  fi
+fi
+printf 'remote:  %s\n' "$(git remote get-url origin 2>/dev/null || echo 'none')"
+
+section "Git"
+printf 'branch:  %s\n' "$(git branch --show-current)"
+git status --short --branch
+printf '\nlast commits:\n'
+git --no-pager log --oneline -5
+
+section "Gates tooling"
+missing=0
+for tool in uv just mise node npm direnv gitleaks actionlint zizmor lychee shellcheck; do
+  if command -v "$tool" >/dev/null 2>&1; then
+    printf '  ok   %s\n' "$tool"
+  else
+    printf '  MISS %s  (blocking in CI — run: mise install)\n' "$tool"
+    missing=1
+  fi
+done
+if command -v python >/dev/null 2>&1; then
+  printf '  ok   python (%s)\n' "$(uv run python --version 2>/dev/null || python --version)"
+else
+  printf '  MISS python\n'
+  missing=1
+fi
+if command -v parallel >/dev/null 2>&1; then
+  printf '  ok   parallel (optional acceleration)\n'
+else
+  printf '  info parallel absent (optional; gates run sequentially)\n'
+fi
+if command -v codegraph >/dev/null 2>&1; then
+  printf '  ok   codegraph (optional)\n'
+else
+  printf '  info codegraph absent (optional; see docs/development/CODING.md)\n'
+fi
+if [ "$missing" -eq 1 ]; then
+  printf '\nSome required tools are missing. Do NOT ignore this: gates degrade to warnings\n'
+  # shellcheck disable=SC2016 # backticks are literal in the user-facing hint
+  printf 'locally but block in CI. Run `mise install` and re-run this briefing.\n'
+fi
+
+section "Project memory (docs/memory)"
+for f in docs/memory/project.md docs/memory/environment.md docs/memory/corrections.md; do
+  if [ -f "$f" ]; then
+    printf -- '--- %s ---\n' "$f"
+    cat "$f"
+  fi
+done
+
+section "Commit message draft (tmp/commit-message.md)"
+if [ -f tmp/commit-message.md ]; then
+  cat tmp/commit-message.md
+else
+  echo "(absent — create it when the task starts; see AGENTS.md)"
+fi
+
+if [ "$with_prs" -eq 1 ] && command -v gh >/dev/null 2>&1; then
+  section "Open PRs (gh)"
+  gh pr list --state open --limit 30 \
+    --json number,title,author,headRefName,isDraft,updatedAt \
+    --template '{{range .}}#{{.number}} {{.title}} ({{.headRefName}}, by {{.author.login}}, updated {{timeago .updatedAt}}){{"\n"}}{{end}}' \
+    2>/dev/null || echo "(gh pr list failed — offline or missing scopes)"
+
+  section "Open issues (gh)"
+  gh issue list --state open --limit 20 \
+    --json number,title,updatedAt \
+    --template '{{range .}}#{{.number}} {{.title}} (updated {{timeago .updatedAt}}){{"\n"}}{{end}}' \
+    2>/dev/null || echo "(gh issue list failed — offline or missing scopes)"
+fi
+
+section "Done"
+echo "Context loaded. Next: read docs/PROJECT.md + docs/INDEX.md, then work test-first."

@@ -1,0 +1,46 @@
+name: security
+
+# Slow-lane security: full-history secrets scan and CodeQL run weekly, not on
+# every push (ADR-0005). The fast lane already gates secrets on the staged
+# diff and working tree; history and SAST are scheduled concerns.
+
+on:
+  schedule:
+    - cron: "29 3 * * 1" # weekly, Monday 03:29 UTC
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  # CodeQL code scanning is free on public repos; on private repos it requires
+  # GitHub Advanced Security. The job self-skips on private repos: enable GHAS
+  # (Settings → Code security) and remove the condition to activate it there.
+  codeql:
+    if: github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      actions: read
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # tag: v7.0.1
+        with:
+          persist-credentials: false
+      - uses: github/codeql-action/init@0911ee96d2d6c8def97122c36c5cadd93829a4b4 # tag: v4
+        with:
+          languages: python
+          build-mode: none
+      - uses: github/codeql-action/analyze@0911ee96d2d6c8def97122c36c5cadd93829a4b4 # tag: v4
+
+  secrets-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # tag: v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # tag: v5.2.4
+      - run: gitleaks git --redact --no-banner .

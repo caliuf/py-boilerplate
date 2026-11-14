@@ -1,0 +1,10 @@
+{
+  "name": "py-boilerplate-docs-tooling",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Dev-only tooling for documentation checks (cspell).",
+  "devDependencies": {
+    "@cspell/dict-it-it": "3.1.7",
+    "cspell": "10.5.0"
+  }
+}

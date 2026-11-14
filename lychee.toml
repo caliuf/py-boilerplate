@@ -1,0 +1,18 @@
+cache = true
+max_retries = 2
+timeout = 20
+
+# Local-only artifacts and the frozen blueprint are not living documentation.
+exclude_path = [
+  "./.venv/**",
+  "./.venv-*",
+  "./coverage/**",
+  "./dist/**",
+  "./build/**",
+  "./tmp/**",
+  "./node_modules/**",
+  "./docs/init/**",
+]
+
+# medium.com rate-limits automated checks and is not a project-owned link.
+exclude = ["medium\\.com"]

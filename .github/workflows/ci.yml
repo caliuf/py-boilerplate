@@ -1,0 +1,81 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  CI: "true"
+
+jobs:
+  quality:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # tag: v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # tag: v5.2.4
+      - run: uv sync --locked
+      - run: npm ci
+      - run: just format-check lint shell-check typecheck dead-code arch docs-check workflows-check secrets security
+
+  integration-and-coverage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # tag: v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # tag: v5.2.4
+      - run: uv sync --locked
+      - run: just test-unit test-integration test-contract smoke coverage
+      - run: just package-check
+
+  python-compatibility:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.13", "3.14"]
+    env:
+      UV_PYTHON: ${{ matrix.python-version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # tag: v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # tag: v5.2.4
+      - run: uv sync --locked
+      - run: just test-unit test-integration test-contract
+
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # tag: v7.0.1
+        with:
+          persist-credentials: false
+      - uses: jdx/mise-action@6be3c7ed4c21d4f76b208d351d95aac273ebb76d # tag: v5.2.4
+      - run: uv sync --locked
+      - run: just test-e2e
+
+  # Dependency Review requires GitHub Advanced Security on private repos.
+  # Self-skips there; enable GHAS (Settings → Code security) and remove the
+  # second condition to activate it.
+  dependency-review:
+    if: github.event_name == 'pull_request' && github.event.repository.private == false
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # tag: v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/dependency-review-action@cc4f6536e38d1126c5e3b0683d469a14f23bfea4 # tag: v3
+        with:
+          fail-on-severity: high

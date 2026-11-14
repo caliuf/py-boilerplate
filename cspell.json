@@ -1,0 +1,43 @@
+{
+  "version": "0.2",
+  "language": "en,it",
+  "dictionaries": [
+    "en_us",
+    "it-it",
+    "softwareTerms",
+    "python",
+    "project-words"
+  ],
+  "dictionaryDefinitions": [
+    {
+      "name": "project-words",
+      "path": "./tools/cspell/project-words.txt",
+      "addWords": true
+    }
+  ],
+  "ignorePaths": [
+    ".venv/**",
+    ".venv-*/**",
+    "coverage/**",
+    "dist/**",
+    "build/**",
+    "docs/init/**",
+    "node_modules/**",
+    "tmp/**",
+    "uv.lock",
+    "package-lock.json"
+  ],
+  "files": [
+    "**/*.md",
+    "**/*.py",
+    "**/*.toml",
+    "**/*.yml",
+    "**/*.yaml",
+    "**/*.json",
+    "justfile",
+    "bin/*"
+  ],
+  "import": [
+    "@cspell/dict-it-it/cspell-ext.json"
+  ]
+}

@@ -1,0 +1,46 @@
+[importlinter]
+root_package = py_boilerplate
+
+[importlinter:contract:layers]
+name = Layered architecture
+type = layers
+layers =
+    py_boilerplate.entrypoints
+    py_boilerplate.adapters
+    py_boilerplate.greetings.application
+    py_boilerplate.greetings.ports
+    py_boilerplate.greetings.domain
+
+[importlinter:contract:contracts-is-a-leaf]
+name = Contracts are a dependency leaf
+type = forbidden
+source_modules =
+    py_boilerplate.contracts
+forbidden_modules =
+    py_boilerplate.greetings
+    py_boilerplate.adapters
+    py_boilerplate.entrypoints
+
+[importlinter:contract:domain-is-pure]
+name = Domain is pure
+type = forbidden
+source_modules =
+    py_boilerplate.greetings.domain
+forbidden_modules =
+    py_boilerplate.contracts
+    py_boilerplate.greetings.application
+    py_boilerplate.greetings.ports
+    py_boilerplate.adapters
+    py_boilerplate.entrypoints
+
+[importlinter:contract:entrypoints-are-independent]
+name = Entrypoints are independent
+type = forbidden
+source_modules =
+    py_boilerplate.entrypoints.cli
+    py_boilerplate.entrypoints.api
+    py_boilerplate.entrypoints.mcp
+forbidden_modules =
+    py_boilerplate.entrypoints.cli
+    py_boilerplate.entrypoints.api
+    py_boilerplate.entrypoints.mcp
