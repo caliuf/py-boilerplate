@@ -21,7 +21,8 @@
     "uv.lock",
     "package-lock.json",
     "playwright-report/**",
-    "test-results/**"
+    "test-results/**",
+    "apps/web/dist/**"
   ],
   "files": [
     "**/*.md",
