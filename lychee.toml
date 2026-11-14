@@ -11,6 +11,9 @@ exclude_path = [
   "./build/**",
   "./tmp/**",
   "./node_modules/**",
+  "./apps/web/dist/**",
+  "./playwright-report/**",
+  "./test-results/**",
   "./docs/init/**",
 ]
 
