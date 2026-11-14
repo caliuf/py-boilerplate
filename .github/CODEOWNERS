@@ -23,6 +23,9 @@
 /.importlinter @caliuf
 /coverage-thresholds.json @caliuf
 /.pymarkdown.json @caliuf
+/cspell.json @caliuf
+/package.json @caliuf
+/package-lock.json @caliuf
 /lychee.toml @caliuf
 /.mise.toml @caliuf
 /tools/scripts/ @caliuf
