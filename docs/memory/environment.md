@@ -13,6 +13,8 @@
 | Componente | Versione |
 |---|---|
 | Python | 3.14.5 (pinnata); minimo 3.13 |
+| Node | 24.19.0 (solo tooling documentale) |
+| cspell | 10.5.0 (npm, con dizionario italiano 3.1.7) |
 | uv | 0.11.26 |
 | just | 1.58.0 |
 | direnv | 2.37.1 |
