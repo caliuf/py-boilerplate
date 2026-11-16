@@ -68,7 +68,8 @@ L'environment si compone in quest'ordine:
 | `APP_ENV` | `development`, `test`, `production` | `production` | `development` usa il renderer console; gli altri JSON |
 | `API_HOST` | indirizzo | `127.0.0.1` | Bind dell'API |
 | `API_PORT` | 1-65535 | `8100` | Porta dell'API |
-| `WEB_PORT` | 1-65535 | `5100` | Porta del dev server Vite |
+| `WEB_PORT` | 1-65535 | `5100` | Porta iniziale del dev server Vite; se occupata Vite usa la successiva libera |
+| `WEB_STRICT_PORT` | `true`, `false` | `false` | Con `true` Vite fallisce se `WEB_PORT` è occupata invece di cercare la successiva; gli E2E lo impostano a `true` |
 | `HELLO_WORLD_NAME` | stringa | assente | Nome usato dalla CLI se `--name` non è presente |
 
 `LOG_LEVEL` e `APP_ENV` sono validati all'avvio. Un valore invalido fa fallire il processo con un errore leggibile, non viene ignorato.

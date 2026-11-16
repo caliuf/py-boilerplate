@@ -77,6 +77,8 @@ Le primitive presenti sono il set di partenza per le app derivate: form, overlay
 
 `src/config/env.ts` valida la configurazione a runtime con Zod. `VITE_API_BASE_URL` è vuota per usare la stessa origine e il proxy Vite; in deploy può puntare a un'API assoluta `http(s)://`. Un valore invalido blocca l'avvio invece di produrre richieste silenziosamente sbagliate. Le variabili web sono lette solo dal client e non contengono segreti.
 
+Il dev server parte su `WEB_PORT` (default `5100`) e, se la porta è occupata, usa la successiva libera. Imposta `WEB_STRICT_PORT=true` per fallire invece di ripiegare; gli E2E lo fanno per mantenere deterministico l'URL atteso da Playwright.
+
 ## Contratti e API
 
 Il client chiama `${VITE_API_BASE_URL}/api/hello-world` tramite il proxy Vite verso l'API Python. Le risposte sono validate a runtime con Zod e gli errori Problem Details sono mappati sulla tassonomia condivisa. La UI non parla direttamente con database o servizi esterni e non contiene logica di dominio.
@@ -87,12 +89,12 @@ Il client chiama `${VITE_API_BASE_URL}/api/hello-world` tramite il proxy Vite ve
 - `apps/web/src/**/*.test.tsx` gira nel progetto Vitest jsdom con Testing Library: componenti, stati e interazioni.
 - `tests/e2e/*.spec.ts` gira in Playwright su processi reali: flusso keyboard-first, bottone, tema, accessibilità axe e viewport stretto.
 - I test dei componenti usano le API pubbliche e i ruoli accessibili; non verificano classi CSS interne.
-- Playwright usa porte E2E dedicate (`15100` web, `18100` API) e non riusa server di altre checkout.
+- Playwright usa porte E2E dedicate (`15100` web, `18100` API), imposta `WEB_STRICT_PORT=true` e non riusa server di altre checkout.
 
 ## Comandi
 
 ```bash
-npm run web:dev        # Vite su http://localhost:5100, proxy /api su 127.0.0.1:8100
+npm run web:dev        # Vite su http://localhost:5100 (o la successiva libera), proxy /api su 127.0.0.1:8100
 npm run web:test       # Vitest: contratti, hook e componenti
 npm run web:typecheck  # TypeScript strict
 npm run web:build      # build di produzione
