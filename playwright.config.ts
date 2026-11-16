@@ -42,6 +42,7 @@ export default defineConfig({
       env: {
         API_PORT: String(e2eApiPort),
         WEB_PORT: String(e2eWebPort),
+        WEB_STRICT_PORT: "true",
       },
     },
   ],

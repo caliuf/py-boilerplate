@@ -21,7 +21,7 @@ Avvia API e UI in sviluppo:
 just dev
 ```
 
-La UI è su <http://localhost:5100>; il proxy Vite inoltra `/api` all'API su <http://127.0.0.1:8100>.
+La UI è su <http://localhost:5100> (o sulla prima porta libera successiva); il proxy Vite inoltra `/api` all'API su <http://127.0.0.1:8100>.
 
 Esegui il caso d'uso dalla CLI:
 

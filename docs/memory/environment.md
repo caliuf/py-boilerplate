@@ -45,7 +45,7 @@ just doctor
 ## Limiti e peculiarità
 
 - Il flusso `bin/` richiede `uv` e `direnv`; è supportato su Linux e WSL.
-- La UI richiede Node 24, `npm ci` e Chromium Playwright; Vite usa `strictPort` su 5100, l’API su 8100. Gli E2E Playwright usano porte dedicate (15100 web, 18100 API) e non riusano server di altre checkout.
+- La UI richiede Node 24, `npm ci` e Chromium Playwright; Vite parte su 5100 e, se occupata, cerca la porta libera successiva. Gli E2E impostano `WEB_STRICT_PORT=true` e usano porte dedicate (15100 web, 18100 API) senza riusare server di altre checkout.
 - `direnv allow` è necessario per directory; un `.envrc` bloccato blocca il wrapper.
 - Gli E2E Python usano una porta effimera; Playwright usa 15100 e 18100; firewall o proxy locali possono interferire.
 - `uv sync --locked` non modifica il lockfile: un lock non coerente è un errore, non un auto-fix.

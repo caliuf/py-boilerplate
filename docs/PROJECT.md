@@ -22,7 +22,7 @@ Fornire una base Python che un agente possa estendere senza degradare il reposit
 | CLI | adapter driving | `py-boilerplate hello-world [--name <name>] [--json]` | JSON o testo su stdout; errori su stderr | JSON di default in non-TTY; exit code stabili |
 | API HTTP | adapter driving | `GET /api/hello-world?name=<name>` | JSON `{"message": "..."}` oppure `application/problem+json` | FastAPI, sync handler, nessuno stato globale |
 | MCP | adapter driving | tool `hello_world` con `name: string` | structured content `{"message": "..."}` | stdio, tool read-only e idempotente |
-| Web UI | adapter driving browser | campo "Name" + invio o bottone "Greet" | messaggio o errore a schermo, tema chiaro/scuro | React/Vite su 5100, proxy `/api` su 8100; design system Tailwind + shadcn/Base UI |
+| Web UI | adapter driving browser | campo "Name" + invio o bottone "Greet" | messaggio o errore a schermo, tema chiaro/scuro | React/Vite su 5100 o successiva libera, proxy `/api` su 8100; design system Tailwind + shadcn/Base UI |
 
 Il comando CLI è registrato in `src/py_boilerplate/entrypoints/cli/registry.py`. La route è in `src/py_boilerplate/entrypoints/api/routes/hello_world.py`. Il tool è in `src/py_boilerplate/entrypoints/mcp/tools/hello_world.py`. La UI è in `apps/web/`.
 

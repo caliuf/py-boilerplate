@@ -140,7 +140,7 @@ Esegui `npx playwright install chromium`. In CI il browser viene installato con 
 
 ### La porta 5100 è occupata
 
-Vite usa `strictPort` e fallisce invece di cambiare porta. Ferma il processo che occupa 5100 o imposta `WEB_PORT` a una porta libera. La suite Playwright usa 5100 e 8100: assicurati che siano libere.
+Vite parte su `WEB_PORT` (default 5100) e, se la porta è occupata, usa la successiva libera: l'URL effettivo è stampato nel terminale. Per forzare la porta e fallire invece di ripiegare, imposta `WEB_STRICT_PORT=true`. La suite Playwright usa porte E2E dedicate (15100 web, 18100 API) con `WEB_STRICT_PORT=true`: assicurati che siano libere.
 
 ### CodeScene non è autenticato
 

@@ -8,6 +8,7 @@ import { defineConfig } from "vite";
 const apiHost = process.env["API_HOST"] ?? "127.0.0.1";
 const apiPort = process.env["API_PORT"] ?? "8100";
 const webPort = Number(process.env["WEB_PORT"] ?? "5100");
+const strictWebPort = (process.env["WEB_STRICT_PORT"] ?? "false").toLowerCase() === "true";
 
 export default defineConfig({
   plugins: [react(), tailwindcss()],
@@ -18,7 +19,7 @@ export default defineConfig({
   },
   server: {
     port: webPort,
-    strictPort: true,
+    strictPort: strictWebPort,
     proxy: {
       "/api": `http://${apiHost}:${apiPort}`,
     },

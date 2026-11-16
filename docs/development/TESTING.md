@@ -34,7 +34,7 @@ La maggior parte dei test è integration o contract attraverso le API pubbliche.
 - I test API usano `TestClient` con dipendenze esplicite, senza stato globale.
 - I test MCP usano il trasporto in-memory dell'SDK.
 - I test E2E Python usano una porta effimera e terminano il processo nel `finally`.
-- Playwright avvia API e Vite tramite `webServer` su porte E2E dedicate (15100 web, 18100 API) e non riusa server di altre checkout; Vite usa `strictPort` per non cambiare porta in silenzio.
+- Playwright avvia API e Vite tramite `webServer` su porte E2E dedicate (15100 web, 18100 API) e non riusa server di altre checkout; imposta `WEB_STRICT_PORT=true` perché Vite fallisca invece di spostarsi su una porta diversa da quella attesa da Playwright.
 - I test web non chiamano servizi esterni; il browser e il server locale sono sufficienti.
 - Non usare `time.sleep` arbitrari; l'unico polling ammesso è l'attesa di readiness con timeout.
 
