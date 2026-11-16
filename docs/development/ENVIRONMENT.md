@@ -81,7 +81,7 @@ CodeScene usa variabili proprie, documentate in [`CODESCENE.md`](CODESCENE.md): 
 - La CI non modifica il lockfile e non installa dipendenze fuori dal lock.
 - La matrix Python usa `UV_PYTHON` per forzare la versione del job.
 - Il job E2E avvia processi reali e installa Chromium per Playwright; non usa mock del processo.
-- Il job `quality` esegue `npm ci`, `just web-check` e `just security` (incluso npm audit).
+- Il job `quality` esegue `npm ci`, `just web-check`, `just build` e `just security` (incluso npm audit).
 - La slow lane settimanale esegue CodeQL, gitleaks sulla storia e link check esterni.
 
 ## Rete

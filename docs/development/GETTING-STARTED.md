@@ -95,8 +95,9 @@ La procedura completa è in [`WORKFLOWS.md`](WORKFLOWS.md).
 | `just test-integration` | API e MCP in-memory |
 | `just test-contract` | Processo CLI e coerenza cross-surface |
 | `just test-e2e` | Processi reali per CLI, API, MCP e browser Playwright |
-| `just web-check` | Biome, TypeScript, Vitest e build della UI |
-| `just web-test` | Unit test dei contratti client |
+| `just web-check` | Biome, Oxlint, TypeScript e Vitest della UI |
+| `just web-test` | Test di contratti, hook e componenti della UI |
+| `just build` | Build di produzione della UI |
 | `just coverage` | Coverage e gate a cricchetto |
 | `just ci` | Pipeline completa locale |
 | `just fix` | Auto-fix Ruff |

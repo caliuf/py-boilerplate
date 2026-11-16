@@ -83,7 +83,7 @@ Un task è completo solo se:
 - non ci sono import side effect o stato globale non intenzionale;
 - ogni nuovo caso d'uso è esposto sulle superfici decise e la mappa in `docs/PROJECT.md` è aggiornata;
 - documentazione, ADR e PDR sono aggiornate nello stesso commit;
-- `just web-check` passa (Biome, TypeScript, Vitest, build);
+- `just web-check` passa (Biome, Oxlint, TypeScript, Vitest) e `just build` passa;
 - i flussi UI nuovi hanno un test Playwright o una motivazione esplicita;
 - il Code Health dei file toccati non è degradato (`just codescene-safeguard` / `just codescene-changeset`);
 - nessun token CodeScene o configurazione OAuth è finito nel repository;
@@ -106,4 +106,4 @@ Periodicamente, e comunque dopo un ciclo intenso, esegui una retrospettiva sui f
 
 `just precommit` esegue `just codescene-safeguard` sui file staged/modificati; `just prepush` esegue `just codescene-changeset` sul branch. Se l'MCP CodeScene non è autenticato, il gate fallisce chiuso: autentica o riporta il blocker. Non abbassare `.codescene-thresholds`.
 
-La UI ha un ciclo separato: `just web-check` per formattazione, typecheck, test e build; `just test-e2e` per i flussi Playwright. In CI il job `e2e` installa Chromium e avvia API e Vite tramite `playwright.config.ts`.
+La UI ha un ciclo separato: `just web-check` per formattazione, lint, typecheck e test Vitest; `just build` per la build di produzione; `just test-e2e` per i flussi Playwright con audit axe. In CI il job `e2e` installa Chromium e avvia API e Vite tramite `playwright.config.ts` su porte dedicate.

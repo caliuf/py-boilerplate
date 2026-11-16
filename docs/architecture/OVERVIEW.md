@@ -49,8 +49,12 @@ src/py_boilerplate/
     mcp/            # factory MCPServer, tool, composition root
 
 apps/web/
-  src/design-system/      # Page, TextInput, Button, Message, CSS
-  src/features/greeting/  # pagina, hook di stato server, client API
+  src/app/                # shell, provider del tema, toggle chiaro/scuro
+  src/design-system/
+    primitives/           # componenti shadcn/Base UI del repository
+    patterns/             # composizioni riutilizzabili fra feature
+    theme/                # token semantici e CSS globale Tailwind
+  src/features/greeting/  # pagina, hook di stato server, client API e test
   src/contracts.ts        # mirror Zod dei contratti Pydantic/OpenAPI
 ```
 
