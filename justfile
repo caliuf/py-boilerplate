@@ -256,6 +256,10 @@ test-e2e:
     uv run pytest tests/e2e -m e2e -q
     npm run test:e2e
 
+# Test del tooling Node non coperto dai test della UI (guardie e script)
+test-tools:
+    node --test tools/scripts/*.test.mjs
+
 # Coverage con branch, poi gate a cricchetto
 coverage:
     uv run pytest --cov=py_boilerplate --cov-report=term-missing --cov-report=json:coverage/coverage.json -q
@@ -350,11 +354,12 @@ prepush:
       "just test-unit" \
       "just test-integration" \
       "just smoke" \
+      "just test-tools" \
       "just coverage" || rc=1
     exit "$rc"
 
 # Replica locale esatta della pipeline CI
-ci: format-check lint shell-check typecheck dead-code arch docs-check web-check build workflows-check secrets security
+ci: format-check lint shell-check typecheck dead-code arch docs-check web-check build workflows-check secrets security test-tools
     just test-unit
     just test-integration
     just test-contract

@@ -12,6 +12,7 @@
 
 - `apps/web/` è un workspace npm privato, costruito con Vite.
 - `npm ci` installa root, UI e tooling documentale da `package-lock.json`.
+- Il package manager è npm: il hook `preinstall` esegue `tools/scripts/require-npm.mjs` e blocca `pnpm`, `yarn` e `bun` con un errore esplicito. Gli artefatti di quegli altri manager (`pnpm-lock.yaml`, `pnpm-workspace.yaml`, `yarn.lock`, `bun.lock`, `bun.lockb`) sono gitignored e non vanno committati: il lock canonico resta `package-lock.json`.
 - I browser Playwright vivono nella cache utente (`~/.cache/ms-playwright`), non nel repository.
 - `npm audit --omit=dev --audit-level=high` è parte di `just security`.
 - In produzione la UI è un bundle statico: serve lo stesso origin dell'API o un reverse proxy per `/api`.

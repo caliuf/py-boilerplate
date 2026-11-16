@@ -50,6 +50,7 @@ just doctor
 - Gli E2E Python usano una porta effimera; Playwright usa 15100 e 18100; firewall o proxy locali possono interferire.
 - `uv sync --locked` non modifica il lockfile: un lock non coerente è un errore, non un auto-fix.
 - La CI non ha accesso a segreti di produzione; non esistono deploy.
+- Il package manager è npm: il hook `preinstall` (`tools/scripts/require-npm.mjs`) blocca `pnpm`, `yarn` e `bun`, e gli artefatti di altri manager sono gitignored. `pnpm exec` e gli install con `--ignore-scripts` non passano dal guard: il lock canonico resta `package-lock.json`.
 - Alcune API di GitHub richiedono scope o piani specifici; un 403 non significa che il controllo sia attivo.
 
 ## Diagnostica

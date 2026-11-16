@@ -31,6 +31,7 @@ I file in [`docs/init/`](docs/init/) sono il blueprint congelato del boilerplate
 - Quando diagnostichi un comportamento runtime, riproduci il flusso con `LOG_LEVEL=debug` e cita i log rilevanti. Non lasciare `print()` o debug temporanei.
 - Non usare `# type: ignore`, `# noqa`, `# pragma: no cover` o `# nosec` senza scope ristretto, motivo e, quando applicabile, codice errore.
 - Non modificare a mano `uv.lock`, `coverage-thresholds.json` o altri file generati.
+- Il package manager web è npm: non usare `pnpm`, `yarn` o `bun`. Il hook `preinstall` (`tools/scripts/require-npm.mjs`) blocca gli altri manager; non committare lockfile o workspace file diversi da `package-lock.json`.
 - Prima di usare un'API di libreria, verifica che esista nella versione installata leggendo sorgenti, stub o documentazione. Non fidarti della memoria.
 - Non introdurre una decisione di prodotto senza PDR, né una decisione architetturale senza ADR, nello stesso commit del codice.
 - Mantieni `tmp/commit-message.md` con il messaggio proposto per il lavoro in corso. Azzeralo quando parti da `git status` pulito; integralo altrimenti. `tmp/` è gitignored.

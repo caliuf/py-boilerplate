@@ -39,6 +39,13 @@ Thumbs.db
 *.swo
 *~
 
+# Unsupported package managers (the preinstall hook blocks them; never commit their artifacts)
+pnpm-lock.yaml
+pnpm-workspace.yaml
+yarn.lock
+bun.lock
+bun.lockb
+
 # Agent working files
 tmp/
 

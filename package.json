@@ -10,6 +10,7 @@
     "node": "^24.0.0"
   },
   "scripts": {
+    "preinstall": "node tools/scripts/require-npm.mjs",
     "web:dev": "npm --workspace @py-boilerplate/web run dev",
     "web:build": "npm --workspace @py-boilerplate/web run build",
     "web:typecheck": "npm --workspace @py-boilerplate/web run typecheck",
