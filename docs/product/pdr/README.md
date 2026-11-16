@@ -7,7 +7,8 @@ Le PDR registrano decisioni di prodotto: cosa il sistema deve fare, per chi e co
 | PDR | Titolo | Stato |
 |---|---|---|
 | [0001](0001-hello-world.md) | Un caso d'uso `hello-world` su CLI, API e MCP | Accettata |
-| [0002](0002-ui-web.md) | UI web del caso d'uso `hello-world` | Accettata |
+| [0002](0002-ui-web.md) | UI web del caso d'uso `hello-world` | Accettata, superata parzialmente da PDR-0003 |
+| [0003](0003-tema-ui-web.md) | Tema chiaro/scuro e shell della UI web | Accettata |
 
 ## Quando scrivere una PDR
 

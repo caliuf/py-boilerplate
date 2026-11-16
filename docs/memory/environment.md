@@ -18,7 +18,10 @@
 | cspell | 10.5.0 (npm, con dizionario italiano 3.1.7) |
 | Playwright | 1.65.1 (Chromium in cache utente) |
 | React / Vite / TypeScript | 19.3.1 / 8.3.6 / 7.0.2 |
-| Biome / Vitest | 2.6.7 / 5.1.0 |
+| Tailwind CSS / @tailwindcss/vite | 4.3.5 / 4.3.5 |
+| shadcn / Base UI / Lucide / Sonner | 4.23.0 / 1.9.0 / 1.73.0 / 2.0.8 |
+| Biome / Oxlint / Vitest | 2.6.7 / 1.94.0 / 5.1.0 |
+| Testing Library / jsdom / axe-core Playwright | 16.3.3 / 31.0.1 / 4.14.0 |
 | uv | 0.11.26 |
 | just | 1.58.0 |
 | direnv | 2.37.1 |
@@ -42,9 +45,9 @@ just doctor
 ## Limiti e peculiarità
 
 - Il flusso `bin/` richiede `uv` e `direnv`; è supportato su Linux e WSL.
-- La UI richiede Node 24, `npm ci` e Chromium Playwright; Vite usa `strictPort` su 5100, l’API su 8100.
+- La UI richiede Node 24, `npm ci` e Chromium Playwright; Vite usa `strictPort` su 5100, l’API su 8100. Gli E2E Playwright usano porte dedicate (15100 web, 18100 API) e non riusano server di altre checkout.
 - `direnv allow` è necessario per directory; un `.envrc` bloccato blocca il wrapper.
-- Gli E2E Python usano una porta effimera; Playwright usa 5100 e 8100; firewall o proxy locali possono interferire.
+- Gli E2E Python usano una porta effimera; Playwright usa 15100 e 18100; firewall o proxy locali possono interferire.
 - `uv sync --locked` non modifica il lockfile: un lock non coerente è un errore, non un auto-fix.
 - La CI non ha accesso a segreti di produzione; non esistono deploy.
 - Alcune API di GitHub richiedono scope o piani specifici; un 403 non significa che il controllo sia attivo.
@@ -55,4 +58,4 @@ just doctor
 - `tools/scripts/agent-briefing.sh` per il contesto di sessione.
 - `uv run python -c "import py_boilerplate; print(py_boilerplate.__version__)"` per verificare l'import.
 - `LOG_LEVEL=debug` per riprodurre un flusso con log dettagliati.
-- `just codescene-safeguard` per verificare il Code Health dei file staged; `just web-check` per la UI.
+- `just codescene-safeguard` per verificare il Code Health dei file staged; `just web-check` per la UI e `just build` per la build di produzione.

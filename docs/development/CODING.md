@@ -25,14 +25,18 @@ La direzione è `entrypoints → adapters → application → ports → domain`,
 
 La UI è un'app React/Vite separata, con TypeScript strict e Biome come formatter. Le regole sono:
 
-- `design-system/` contiene i primitivi (`Page`, `TextInput`, `Button`, `Message`, CSS). Le feature non creano markup grezzo per input, bottoni, main o messaggi.
-- `features/<nome>/` contiene pagina, hook di stato server e client API. Non contiene logica di dominio.
+- `design-system/primitives/` contiene i componenti shadcn/Base UI del repository; `patterns/` contiene le composizioni condivise fra feature; `theme/` contiene token semantici e CSS globale.
+- Le feature compongono il design system e non ricostruiscono controlli interattivi. L'HTML semantico nativo resta corretto per la struttura del documento.
+- `features/<nome>/` contiene pagina, hook di stato server, client API e test. Non contiene logica di dominio.
 - Il client valida le risposte esterne con Zod; non usare `as` o `cast` per fidarsi del payload.
 - `contracts.ts` è il mirror client-side dei contratti Pydantic/OpenAPI; il contract test Python verifica i vincoli condivisi.
 - La UI parla all'API solo via HTTP e non importa codice Python.
-- `tsc` è autorevole; `just web-check` esegue Biome, typecheck, Vitest e build.
-- I test dei contratti client stanno accanto al modulo (`contracts.test.ts`); i flussi browser stanno in `tests/e2e/*.spec.ts` e usano Playwright.
+- `tsc` è autorevole sul typecheck; Oxlint è il linter TS/TSX con `jsx-a11y`; Biome è formatter e linter CSS.
+- `just web-check` esegue formattazione, Oxlint, typecheck e test Vitest. `just build` esegue la build di produzione ed è incluso in `just prepush` e `just ci`.
+- I test dei contratti e degli hook stanno accanto al modulo (`*.test.ts` o `*.test.tsx`); i flussi browser stanno in `tests/e2e/*.spec.ts` e usano Playwright.
 - La UI è keyboard-first: Enter invia, il focus è visibile, i controlli hanno label accessibili.
+- Usa token semantici (`bg-primary`, `text-muted-foreground`), non colori di palette. Le classi Tailwind devono essere statiche e complete.
+- Non introdurre un secondo design system, un secondo set di icone, CSS-in-JS runtime o SCSS senza una nuova ADR.
 
 ## Typing
 

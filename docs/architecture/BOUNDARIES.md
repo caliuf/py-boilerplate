@@ -48,17 +48,32 @@ Le regole sono più restrittive della tabella dove Import Linter lo consente: pe
 
 ## Confine della UI web
 
-`apps/web` è un'app Node/React separata e non fa parte del root package Python. Le regole non sono verificate da Import Linter ma dai gate della UI:
+`apps/web` è un'app Node/React separata e non fa parte del root package Python. Le regole non sono verificate da Import Linter ma dai gate della UI.
+
+La direzione delle dipendenze dentro la UI è:
+
+```text
+app → features → design-system
+  ↘ config, contracts
+```
+
+- `app/` compone la shell, i provider e le feature; non contiene logica di caso d'uso.
+- `features/<nome>/` contiene pagina, hook di stato server, client API e test; non crea primitive interattive.
+- `design-system/` non importa `app/` o `features/`; espone token, primitive e pattern.
+- `config/` valida l'ambiente; `contracts.ts` è il mirror Zod dei contratti canonici.
+- Le primitive possono importare `design-system/lib/utils` e altre primitive, non le feature.
 
 | Regola | Verifica |
 |---|---|
 | La UI non importa `src/py_boilerplate` né codice Python | Code review, struttura del workspace, assenza di path Python in `apps/web` |
-| La UI parla all'API solo via HTTP (`/api`) | `hello-world-api.ts`, Playwright E2E |
+| La UI parla all'API solo via HTTP (`${VITE_API_BASE_URL}/api`) | `hello-world-api.ts`, `config/env.ts`, Playwright E2E |
 | Le risposte esterne sono validate a runtime con Zod | `contracts.ts`, Vitest, `test_web_contract.py` |
-| Le feature usano solo il design system | struttura `features/greeting` + `design-system` |
+| Le feature compongono il design system | struttura `features/greeting` + `design-system`; Oxlint |
+| I componenti usano token semantici e classi statiche | Biome CSS, Oxlint, code review |
 | La UI non duplica il dominio | il caso d'uso vive solo in `greetings/application` |
-| TypeScript strict e build | `just web-check` |
-| Flussi browser reali | Playwright E2E |
+| TypeScript strict, lint e test | `just web-check` |
+| Build di produzione e budget | `just build` |
+| Flussi browser reali e accessibilità | Playwright E2E con axe |
 
 `apps/web/src/contracts.ts` è un mirror client-side, non una seconda fonte canonica. La fonte canonica resta Pydantic/OpenAPI; il contract test Python verifica che i vincoli condivisi non divergano.
 
@@ -88,7 +103,7 @@ Le regole sono più restrittive della tabella dove Import Linter lo consente: pe
 4. Aggiungi il contract test che verifica la stessa tassonomia errori delle altre superfici.
 5. Aggiorna la mappa delle superfici in `docs/PROJECT.md`.
 6. Registra una ADR se la superficie introduce un deployable, un framework o un modello di esecuzione nuovo.
-7. Se la superficie è una UI web, aggiungi il design system, la validazione Zod delle risposte, il typecheck e l'E2E Playwright; aggiorna il contract test web.
+7. Se la superficie è una UI web, parti dal design system esistente, aggiungi la validazione Zod delle risposte, il typecheck, i test component e l'E2E Playwright con axe; aggiorna il contract test web.
 
 ## Verifica
 

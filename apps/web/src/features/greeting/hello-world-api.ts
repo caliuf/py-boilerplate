@@ -1,5 +1,8 @@
+import { env } from "@/config/env";
 import type { HelloWorldOutput, Result } from "../../contracts.ts";
 import { helloWorldOutputSchema, problemDetailsSchema } from "../../contracts.ts";
+
+const API_BASE_URL = env.VITE_API_BASE_URL.replace(/\/$/u, "");
 
 /**
  * Typed API client for the greeting feature. Responses are validated against
@@ -10,7 +13,7 @@ export async function fetchHelloWorld(name?: string): Promise<Result<HelloWorldO
   const query = name === undefined || name === "" ? "" : `?name=${encodeURIComponent(name)}`;
   let response: Response;
   try {
-    response = await fetch(`/api/hello-world${query}`);
+    response = await fetch(`${API_BASE_URL}/api/hello-world${query}`);
   } catch {
     return { ok: false, error: { code: "INTERNAL", message: "network error" } };
   }

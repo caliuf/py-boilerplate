@@ -14,8 +14,9 @@ Le ADR registrano decisioni architetturali durature. Una decisione accettata non
 | [0006](0006-superfici-cli-api-mcp.md) | Superfici CLI, API e MCP senza UI browser | Superata da ADR-0009 |
 | [0007](0007-wrapper-bin-direnv.md) | Wrapper `bin/` e stratificazione environment con direnv | Accettata |
 | [0008](0008-memory-bank.md) | Memory bank portabile in `docs/memory/` | Accettata |
-| [0009](0009-ui-web.md) | UI web React/Vite e Playwright | Accettata |
+| [0009](0009-ui-web.md) | UI web React/Vite e Playwright | Accettata, superata parzialmente da ADR-0011 |
 | [0010](0010-codescene.md) | CodeScene Code Health come gate locale | Accettata |
+| [0011](0011-design-system-frontend.md) | Baseline frontend: Tailwind CSS, shadcn/ui e Base UI | Accettata |
 
 ## Quando scrivere una ADR
 

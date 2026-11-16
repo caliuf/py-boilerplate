@@ -20,8 +20,9 @@ Per un bug, il primo commit contiene un regression test che fallisce sul codice 
 | Integration | `tests/integration/` | API con `TestClient`, MCP in-memory, wrapper `bin/`, smoke | Secondi |
 | Contract | `tests/contract/` | CLI su processo reale e coerenza tra superfici | Secondi |
 | E2E Python | `tests/e2e/test_full_stack.py` | Processi reali: CLI, API HTTP, MCP stdio | Secondi |
-| Web unit | `apps/web/src/**/*.test.ts` | Contratti client e validazione Zod | Millisecondi |
-| Web E2E | `tests/e2e/*.spec.ts` | Flussi browser reali con Playwright | Secondi |
+| Web unit | `apps/web/src/**/*.test.ts` | Contratti client, validazione Zod e hook puri | Millisecondi |
+| Web component | `apps/web/src/**/*.test.tsx` | Componenti reali, stati e interazioni in jsdom con Testing Library | Millisecondi |
+| Web E2E | `tests/e2e/*.spec.ts` | Flussi browser reali con Playwright e audit axe | Secondi |
 
 La maggior parte dei test è integration o contract attraverso le API pubbliche. Gli unit test sono usati dove il comportamento è più chiaro in isolamento.
 
@@ -33,7 +34,7 @@ La maggior parte dei test è integration o contract attraverso le API pubbliche.
 - I test API usano `TestClient` con dipendenze esplicite, senza stato globale.
 - I test MCP usano il trasporto in-memory dell'SDK.
 - I test E2E Python usano una porta effimera e terminano il processo nel `finally`.
-- Playwright avvia API e Vite tramite `webServer`; Vite usa `strictPort` per non cambiare porta in silenzio.
+- Playwright avvia API e Vite tramite `webServer` su porte E2E dedicate (15100 web, 18100 API) e non riusa server di altre checkout; Vite usa `strictPort` per non cambiare porta in silenzio.
 - I test web non chiamano servizi esterni; il browser e il server locale sono sufficienti.
 - Non usare `time.sleep` arbitrari; l'unico polling ammesso è l'attesa di readiness con timeout.
 
@@ -59,7 +60,7 @@ Il contract test cross-surface è il test più importante del boilerplate: verif
 - `just coverage` genera `coverage/coverage.json` e applica il gate.
 - `just coverage-raise` alza le soglie ai valori correnti; non le abbassa mai.
 - Le esclusioni sono limitate ai composition root avviati come processo, documentate in `pyproject.toml`.
-- La coverage Python non misura il DOM della UI. La UI è coperta da Vitest per i contratti e da Playwright per i flussi browser; non viene inclusa nel report Python.
+- La coverage Python non misura il DOM della UI. La UI è coperta da Vitest per contratti, hook e componenti e da Playwright con axe per i flussi browser; non viene inclusa nel report Python.
 
 Non scrivere test tautologici o senza assertion. La coverage è un segnale, non un obiettivo isolato.
 
@@ -75,8 +76,9 @@ Non scrivere test tautologici o senza assertion. La coverage è un segnale, non 
 | `just coverage` | Suite non-E2E con coverage |
 | `just test-compat` | Suite su Python 3.13 e 3.14 |
 | `just test-related` | Unit se ci sono modifiche Python staged |
-| `just web-test` | Vitest sui contratti client |
-| `just web-check` | Biome, TypeScript, Vitest e build |
+| `just web-test` | Vitest su contratti, hook e componenti |
+| `just web-check` | Biome, Oxlint, TypeScript e Vitest |
+| `just build` | Build di produzione della UI |
 | `just test-e2e` | E2E Python e Playwright |
 
 ## Aggiungere un caso d'uso
@@ -86,7 +88,7 @@ Non scrivere test tautologici o senza assertion. La coverage è un segnale, non 
 3. Aggiungi il contract test che attraversa tutte le superfici.
 4. Aggiungi l'integration test specifico della superficie.
 5. Aggiungi l'E2E solo se il processo reale introduce un rischio che gli altri livelli non coprono.
-6. Se il caso d'uso ha una UI, aggiungi il test Vitest del contratto client e il flusso Playwright.
+6. Se il caso d'uso ha una UI, aggiungi il test Vitest del contratto client, il test del componente o hook e il flusso Playwright con audit axe dove rilevante.
 7. Aggiorna la mappa delle superfici e la PDR.
 
 ## Diagnosticare un fallimento

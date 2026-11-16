@@ -52,7 +52,8 @@ Quando il progetto non è più un boilerplate:
 ## 5. Configurare la qualità
 
 - Mantieni Ruff, mypy strict, pytest, coverage, Import Linter e deptry.
-- Mantieni Biome, TypeScript strict, Vitest e Playwright se adotti la UI.
+- Mantieni Biome, Oxlint con `jsx-a11y`, TypeScript strict, Vitest con progetto jsdom, Playwright e axe se adotti la UI.
+- Se cambi il design system, aggiorna `apps/web/components.json`, i token e l’ADR pertinente; non aggiungere un secondo design system.
 - Aggiorna il mirror Zod `apps/web/src/contracts.ts` e il contract test web quando cambi i contratti.
 - Aggiorna i contratti Import Linter quando cambi i bounded context.
 - Imposta la baseline di coverage sul valore reale del nuovo progetto, senza abbassare le soglie esistenti.
@@ -87,7 +88,7 @@ just doctor
 just ci
 ```
 
-`just ci` deve passare su una clone pulita, senza modifiche non committate e senza tool mancanti. Include Playwright: assicurati che il browser Chromium sia installato e che le porte 5100 e 8100 siano libere.
+`just ci` deve passare su una clone pulita, senza modifiche non committate e senza tool mancanti. Include Playwright: assicurati che il browser Chromium sia installato e che le porte E2E 15100 e 18100 siano libere. La suite non riusa server di altre checkout.
 
 ## 8. Primo ciclo agentico reale
 

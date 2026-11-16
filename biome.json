@@ -16,7 +16,10 @@
       "package.json",
       "apps/web/package.json",
       "apps/web/tsconfig.json",
-      "tests/tsconfig.json"
+      "apps/web/components.json",
+      "tests/tsconfig.json",
+      ".oxlintrc.json",
+      "tools/scripts/web-budget.mjs"
     ]
   },
   "formatter": {
@@ -26,7 +29,19 @@
     "lineWidth": 100
   },
   "linter": {
-    "enabled": false
+    "enabled": false,
+    "rules": {
+      "complexity": {
+        "noImportantStyles": "error"
+      },
+      "correctness": {
+        "noUnknownProperty": "error"
+      },
+      "suspicious": {
+        "noUnknownAtRules": "error",
+        "noDuplicateProperties": "error"
+      }
+    }
   },
   "markdown": {
     "formatter": {
@@ -46,6 +61,14 @@
       "source": {
         "organizeImports": "on"
       }
+    }
+  },
+  "css": {
+    "parser": {
+      "tailwindDirectives": true
+    },
+    "linter": {
+      "enabled": true
     }
   }
 }

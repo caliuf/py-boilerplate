@@ -22,7 +22,7 @@ Fornire una base Python che un agente possa estendere senza degradare il reposit
 | CLI | adapter driving | `py-boilerplate hello-world [--name <name>] [--json]` | JSON o testo su stdout; errori su stderr | JSON di default in non-TTY; exit code stabili |
 | API HTTP | adapter driving | `GET /api/hello-world?name=<name>` | JSON `{"message": "..."}` oppure `application/problem+json` | FastAPI, sync handler, nessuno stato globale |
 | MCP | adapter driving | tool `hello_world` con `name: string` | structured content `{"message": "..."}` | stdio, tool read-only e idempotente |
-| Web UI | adapter driving browser | campo "Name" + invio o bottone "Greet" | messaggio o errore a schermo | React/Vite su 5100, proxy `/api` su 8100 |
+| Web UI | adapter driving browser | campo "Name" + invio o bottone "Greet" | messaggio o errore a schermo, tema chiaro/scuro | React/Vite su 5100, proxy `/api` su 8100; design system Tailwind + shadcn/Base UI |
 
 Il comando CLI è registrato in `src/py_boilerplate/entrypoints/cli/registry.py`. La route è in `src/py_boilerplate/entrypoints/api/routes/hello_world.py`. Il tool è in `src/py_boilerplate/entrypoints/mcp/tools/hello_world.py`. La UI è in `apps/web/`.
 
@@ -59,8 +59,9 @@ Non esistono servizi separati, code, database o job schedulati. Le superfici con
 - Gestione dipendenze Python: `uv` con `uv.lock` versionato; nessun `requirements.txt` manuale.
 - Gestione dipendenze web: npm workspace con `package-lock.json` versionato.
 - Dipendenze runtime Python: FastAPI, MCP Python SDK, Pydantic, pydantic-settings, structlog, Uvicorn.
-- Dipendenze web: React 19, ReactDOM 19, Zod 4, Vite 8, TypeScript 7.
-- Dipendenze di sviluppo: pytest, coverage, mypy, Ruff, Import Linter, deptry, Bandit, pip-audit, pymarkdown, cspell, httpx, Biome, Vitest, Playwright.
+- Dipendenze web: React 19, ReactDOM 19, Zod 4, Tailwind CSS 4, shadcn/ui con Base UI, Lucide React, CVA, `cn`, Sonner.
+- Dipendenze di sviluppo web: Vite 8, TypeScript 7, Vitest 5 con jsdom e Testing Library, Playwright con axe-core, Biome, Oxlint type-aware con `jsx-a11y`.
+- Dipendenze di sviluppo Python: pytest, coverage, mypy, Ruff, Import Linter, deptry, Bandit, pip-audit, pymarkdown, cspell, httpx.
 
 ## Dati e confini esterni
 
@@ -79,10 +80,12 @@ Non esistono servizi separati, code, database o job schedulati. Le superfici con
 4. **API invalida**: nome vuoto o troppo lungo → 400 `application/problem+json` con codice `VALIDATION`.
 5. **MCP felice**: schema del tool → `say_hello` → structured content.
 6. **MCP invalido**: schema del tool rifiuta l'input → tool error con `isError: true`.
-7. **Web felice**: input o bottone → fetch `/api/hello-world` → validazione Zod → messaggio a schermo.
-8. **Web invalido**: nome vuoto → 400 Problem Details → messaggio di errore a schermo.
-9. **Package**: build del wheel → installazione in venv pulito → import fuori dal repository → entry point CLI funzionante.
-10. **Web build**: Vite build → bundle statico senza errori TypeScript.
+7. **Web felice**: input o bottone → fetch `/api/hello-world` → validazione Zod → messaggio a schermo con stato di successo accessibile.
+8. **Web invalido**: nome vuoto → 400 Problem Details → messaggio di errore a schermo con stato di errore accessibile.
+9. **Web tema**: preferenza di sistema o toggle → classe `light`/`dark` prima del primo paint → scelta persistita ai reload.
+10. **Package**: build del wheel → installazione in venv pulito → import fuori dal repository → entry point CLI funzionante.
+11. **Web build**: Vite build → bundle statico con CSS Tailwind, senza errori TypeScript.
+12. **Web quality**: lint CSS/TSX, typecheck, test component, build e audit axe sui flussi critici.
 
 ## Mappa dei comandi
 
@@ -98,11 +101,12 @@ Non esistono servizi separati, code, database o job schedulati. Le superfici con
 | `just test-integration` | Suite integration e contract Python |
 | `just test-contract` | Contratto CLI, cross-surface e contratto web |
 | `just test-e2e` | Processi reali CLI/API/MCP e UI web con Playwright |
-| `just web-dev` | Solo dev server Vite |
-| `just web-build` | Build di produzione della UI |
+| `just web-dev` | Solo dev server Vite; richiede l'API già attiva (usa `just dev` per entrambi) |
+| `just web-build` | Build Vite della UI senza budget |
 | `just web-typecheck` | TypeScript strict di app e test E2E |
-| `just web-test` | Unit test Vitest dei contratti client |
-| `just web-check` | Biome, typecheck, Vitest e build della UI |
+| `just web-test` | Test Vitest di contratti, hook e componenti della UI |
+| `just web-check` | Biome, Oxlint, typecheck e Vitest della UI |
+| `just build` | Build di produzione della UI; inclusa in prepush e CI |
 | `just coverage` | Coverage Python con branch e gate a cricchetto |
 | `just coverage-raise` | Alza le soglie Python ai valori correnti |
 | `just smoke` | Smoke test del percorso pubblico |
@@ -121,11 +125,12 @@ Non esistono servizi separati, code, database o job schedulati. Le superfici con
 | Gate | Budget | Note |
 |---|---|---|
 | `just precommit` | 10 secondi | Check rapidi, web check, unit test e CodeScene safeguard |
-| `just prepush` | 60 secondi | Analisi statica, web check, CodeScene changeset e suite principali |
+| `just prepush` | 60 secondi | Analisi statica, web check, build, CodeScene changeset e suite principali |
 | `just ci` | 10 minuti | Include E2E Python, Playwright, package check e compatibilità Python |
 | Suite completa | 10 minuti | Guard di testing e web |
 | Coverage Python | 95% linee, 90% branch | Baseline iniziale; può solo salire |
 | CodeScene | Hotspot 9.10, Average 9.76 | Baseline 2026-11-14; può solo salire |
+| Budget web (gzip) | CSS 20 KB, JavaScript 220 KB, totale 240 KB | Baseline 2026-11-16; può solo migliorare o essere aggiornata con ADR |
 
 I budget sono un tetto, non un obiettivo. CodeScene e Playwright possono richiedere rete o browser e sono misurati a parte.
 
@@ -137,7 +142,7 @@ I budget sono un tetto, non un obiettivo. CodeScene e Playwright possono richied
 | CLI agent-first | Stabile | Contract test su processo reale |
 | API HTTP con Problem Details | Stabile | Integration test |
 | Tool MCP read-only | Stabile | Integration in-memory ed E2E stdio |
-| UI web React/Vite | Stabile | Vitest, Playwright e contract test web |
+| UI web React/Vite con design system | Stabile | Vitest component, Playwright, axe e contract test web |
 | Package e entry point | Stabile | `just package-check` |
 | CodeScene Code Health | Attivo | `just codescene-safeguard` e `just codescene-changeset` |
 | Memory bank | Stabile | `docs/memory/` |

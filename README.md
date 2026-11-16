@@ -42,7 +42,8 @@ bin/py-boilerplate-hello-world --name Ada --json
 | `just setup` | Prima installazione o riallineamento completo |
 | `just doctor` | Verifica runtime, tool, lockfile, hook e `.envrc` |
 | `just dev` | Avvia API e UI con reload |
-| `just web-check` | Biome, TypeScript, Vitest e build della UI |
+| `just web-check` | Biome, Oxlint, TypeScript e Vitest della UI |
+| `just build` | Build di produzione della UI |
 | `just test-e2e` | E2E Python e Playwright |
 | `just codescene-safeguard` | CodeScene sui file staged/modificati |
 | `just codescene-changeset` | CodeScene sul change-set del branch |
@@ -63,7 +64,7 @@ Il progetto è un modular monolith in una singola distribuzione Python:
 - `src/py_boilerplate/greetings/` contiene il bounded context `greetings`, diviso in dominio puro, application layer e porte.
 - `src/py_boilerplate/adapters/` implementa le porte verso tecnologie esterne, oggi structlog.
 - `src/py_boilerplate/entrypoints/` contiene i composition root e gli adapter driving: CLI, API FastAPI e server MCP.
-- `apps/web/` è la UI React/Vite: design system, feature `greeting`, client API validato con Zod e test Vitest.
+- `apps/web/` è la UI React/Vite: design system Tailwind + shadcn/Base UI, tema chiaro/scuro, feature `greeting`, client API validato con Zod e test Vitest/Playwright.
 - `tests/` contiene unit, integration, contract ed E2E; `tests/support/` ospita i test double, mai importabili da `src/`.
 
 La direzione delle dipendenze Python è verificata da Import Linter: `entrypoints → adapters → application → ports → domain`, con `contracts` come foglia. La UI consuma l'API via HTTP/OpenAPI e non importa codice Python. I dettagli sono in [`docs/architecture/OVERVIEW.md`](docs/architecture/OVERVIEW.md) e [`docs/architecture/BOUNDARIES.md`](docs/architecture/BOUNDARIES.md).
@@ -73,7 +74,7 @@ La direzione delle dipendenze Python è verificata da Import Linter: `entrypoint
 Il progetto adotta il modello 3G del Vademecum:
 
 - **Guide**: [`AGENTS.md`](AGENTS.md), [`docs/PROJECT.md`](docs/PROJECT.md), ADR e PDR.
-- **Gate**: Ruff, mypy strict, pytest con coverage, Import Linter, deptry, pymarkdown, cspell, lychee, actionlint, zizmor, gitleaks, bandit, pip-audit, npm audit, Biome, TypeScript, Vitest, Playwright e CodeScene.
+- **Gate**: Ruff, mypy strict, pytest con coverage, Import Linter, deptry, pymarkdown, cspell, lychee, actionlint, zizmor, gitleaks, bandit, pip-audit, npm audit, Biome, Oxlint, TypeScript, Vitest, Playwright, axe e CodeScene.
 - **Guard**: `just guards` produce un report che la CI schedulata trasforma in issue, senza auto-fix.
 
 Le soglie di coverage vivono in [`coverage-thresholds.json`](coverage-thresholds.json) e possono solo salire. Il Code Health di progetto ha un ratchet in [`.codescene-thresholds`](.codescene-thresholds), con progetto Cloud `87780`. I file che definiscono i gate sono protetti da [`CODEOWNERS`](.github/CODEOWNERS).

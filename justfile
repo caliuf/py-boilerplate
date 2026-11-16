@@ -60,8 +60,17 @@ dev:
     trap 'kill "$api_pid" 2>/dev/null || true' EXIT
     npm run web:dev
 
-# Web: dev server Vite
+# Web: dev server Vite senza API (l'API deve essere già attiva)
 web-dev:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    api_host="${API_HOST:-127.0.0.1}"
+    api_port="${API_PORT:-8100}"
+    if ! curl --silent --fail --max-time 1 --output /dev/null "http://${api_host}:${api_port}/api/hello-world"; then
+      echo "API non raggiungibile su ${api_host}:${api_port}." >&2
+      echo "Avvia 'just dev' per API e UI insieme, oppure avvia l'API in un'altra shell." >&2
+      exit 1
+    fi
     npm run web:dev
 
 # Web: build di produzione
@@ -73,13 +82,18 @@ web-typecheck:
     npm run web:typecheck
     npm run tests:typecheck
 
-# Web: unit test dei contratti client
+# Web: test unit e component della UI
 web-test:
     npm run web:test
 
-# Web: formattazione, typecheck, test e build
+# Web: formattazione, lint, typecheck e test della UI
 web-check:
     npm run web:check
+
+# Build di produzione dei workspace (UI web) con budget di bundle
+build:
+    npm run web:build
+    npm run web:budget
 
 # Python del progetto
 python:
@@ -327,6 +341,7 @@ prepush:
       "just arch" \
       "just docs-check" \
       "just web-check" \
+      "just build" \
       "just workflows-check" \
       "just secrets" \
       "just security" \
@@ -339,7 +354,7 @@ prepush:
     exit "$rc"
 
 # Replica locale esatta della pipeline CI
-ci: format-check lint shell-check typecheck dead-code arch docs-check web-check workflows-check secrets security
+ci: format-check lint shell-check typecheck dead-code arch docs-check web-check build workflows-check secrets security
     just test-unit
     just test-integration
     just test-contract

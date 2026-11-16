@@ -6,7 +6,7 @@
 
 - [ ] Test che descrivono il comportamento, visti fallire prima dell'implementazione
 - [ ] `just prepush` eseguito e verde (output nel report)
-- [ ] `just web-check` e `just test-e2e` verdi, se la UI è toccata
+- [ ] `just web-check`, `just build` e `just test-e2e` verdi, se la UI è toccata
 - [ ] `just codescene-safeguard` / `just codescene-changeset` verdi, se il codice è toccato
 - [ ] Nessuna soglia abbassata, nessun gate aggirato, nessun `--no-verify`
 - [ ] ADR/PDR aggiornate nello stesso commit, se servono

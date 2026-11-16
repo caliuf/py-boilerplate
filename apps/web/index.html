@@ -1,10 +1,27 @@
 <!doctype html>
-<!-- META: set lang and title for your project. -->
+<!-- META: set lang, title and theme-color for your project. -->
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#101318" media="(prefers-color-scheme: dark)" />
     <title>py-boilerplate</title>
+    <script>
+      (() => {
+        try {
+          const stored = localStorage.getItem("py-boilerplate-theme");
+          const systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          const dark = stored === "dark" || (stored !== "light" && systemDark);
+          document.documentElement.classList.toggle("dark", dark);
+          document.documentElement.classList.toggle("light", !dark);
+          document.documentElement.setAttribute("data-theme", dark ? "dark" : "light");
+        } catch {
+          // The React ThemeProvider applies the theme after hydration.
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
