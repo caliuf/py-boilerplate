@@ -76,14 +76,14 @@ Il wrapper carica `.env.default`, poi l'eventuale `.env` del chiamante tramite d
 
 ## Primo task
 
-1. Crea un branch: `git switch -c feat/<scope>`.
+1. Crea un branch dedicato: `git switch -c feat/<scope>`. Nel checkout principale, quando non chiedi branch o PR, puoi lavorare sul working tree corrente e lasciare il commit al maintainer (vedi [`WORKFLOWS.md`](WORKFLOWS.md) § Workspace di sviluppo principale).
 2. Leggi [`docs/memory/project.md`](../memory/project.md), [`docs/memory/environment.md`](../memory/environment.md) e le ADR/PDR pertinenti.
 3. Scrivi il test che descrive il comportamento e guardalo fallire.
 4. Implementa il minimo per il verde, poi rifattorizza.
 5. Esegui `just precommit`.
 6. Aggiorna documentazione, ADR e PDR nello stesso commit.
 7. Esegui `just prepush`.
-8. Apri la PR con il report dei comandi.
+8. Dopo consenso esplicito a commit, push e PR, apri la PR con il report dei comandi.
 
 La procedura completa è in [`WORKFLOWS.md`](WORKFLOWS.md).
 

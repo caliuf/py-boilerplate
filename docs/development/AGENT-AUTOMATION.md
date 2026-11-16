@@ -30,6 +30,7 @@ Mantieni `tmp/commit-message.md` con il messaggio che intendi proporre. Il file 
 - Se parti da `git status` pulito, azzeralo.
 - Se integri lavoro già presente, aggiornalo o correggilo.
 - Il messaggio deve descrivere l'intero diff, non solo l'ultima modifica.
+- Segui il formato di [`WORKFLOWS.md`](WORKFLOWS.md) § Commit: prefisso conventional, una riga riassuntiva in italiano, riga vuota, lista puntata con il dettaglio. Niente hard wrap.
 
 `tools/scripts/finish-task.sh` legge questo file se non riceve `-m`.
 
@@ -38,6 +39,8 @@ Mantieni `tmp/commit-message.md` con il messaggio che intendi proporre. Il file 
 ```bash
 tools/scripts/finish-task.sh
 ```
+
+Lo script si usa **solo su un branch dedicato e dopo consenso esplicito a commit, push e PR**. Se il consenso non c'è, fermati al report e lascia le modifiche nel working tree. Nel checkout principale, quando l'utente non ha chiesto branch o PR, non usare lo script: il commit resta all'utente (vedi [`WORKFLOWS.md`](WORKFLOWS.md) § Workspace di sviluppo principale).
 
 Lo script:
 

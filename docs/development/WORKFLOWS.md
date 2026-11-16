@@ -6,14 +6,37 @@ Il progetto usa il modello 3G: guide corte, gate deterministici, guard report-on
 
 1. **Baseline**: `just prepush` deve essere verde prima di iniziare. Se è rosso, ripristina la salute o segnala il blocco.
 2. **Contesto**: leggi `AGENTS.md`, `docs/PROJECT.md`, la memory bank e le ADR/PDR pertinenti.
-3. **Branch**: crea `feat/<scope>`, `fix/<scope>` o `refactor/<scope>`. Non lavorare su `main`.
+3. **Branch**: nel flusso strutturato crea un branch dedicato con il naming della sezione § Branching, PR e worktree. Nel checkout principale, quando l'utente non chiede branch o PR, lavora sul working tree corrente e lascia il commit all'utente.
 4. **Piano**: il task deve stare in una sessione. Se è troppo grande, spezzalo.
 5. **Red**: scrivi il test e guardalo fallire.
 6. **Green**: implementa il minimo.
 7. **Refactor**: migliora senza cambiare comportamento.
 8. **Documentazione**: aggiorna docs, ADR e PDR nello stesso commit.
 9. **Gate**: `just precommit` durante, `just prepush` prima della consegna.
-10. **PR**: usa `tools/scripts/finish-task.sh` o `gh pr create`; allega il report.
+10. **PR**: solo dopo consenso esplicito a commit, push e PR, usa `tools/scripts/finish-task.sh` o `gh pr create`; allega il report.
+
+## Branching, PR e worktree
+
+Il modello strutturato è **un task = un branch = una PR**. Il lavoro isolato o parallelo vive in un branch o in un worktree dedicato.
+
+Il naming è:
+
+```text
+<tipo>/<issue>-<slug>     feat/42-rate-limiting
+<tipo>/<slug>             fix/typo-readme          (solo task troppo piccoli per un'issue)
+```
+
+I tipi sono quelli dei conventional commit: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `chore`, `build`, `ci`. Il numero dell'issue GitHub è il progressivo univoco e dà tracciabilità issue → branch → PR.
+
+### Workspace di sviluppo principale
+
+Quando `realpath $(pwd)` corrisponde a `/home/dati/workspace/py-boilerplate` e l'utente non richiede esplicitamente un branch/PR, il flusso di default non è il modello branch + PR, ma l'applicazione diretta delle modifiche sul working tree corrente — in genere `main` — con il commit lasciato all'utente. L'agente non crea branch autonomi né apre PR. Se serve un task isolato, l'utente lo richiede esplicitamente o si usa un worktree.
+
+Il modello un task = un branch = una PR resta valido per lavoro strutturato, autonomo o in parallelo. `tools/scripts/finish-task.sh` rifiuta di girare su `main`: è coerente con questa eccezione, perché nel checkout principale il commit resta all'utente.
+
+### Review e merge
+
+Il ruleset di `main` richiede una PR con review CODEOWNERS. Il maintainer ha il bypass `always` per le emergenze: l'uso va dichiarato nel report e non serve a chiudere PR rosse. Non fare force-push su un branch con review aperta salvo necessità e accordo.
 
 ## Fast path docs-only
 
@@ -40,6 +63,8 @@ Qualsiasi dubbio risolve in `full`: nessun git, nessun upstream, diff vuoto o pa
 
 Non usare `--no-verify`, `SKIP` o `git commit -n`. Se un hook fallisce, correggi il problema.
 
+Gli hook versionati eseguono già `just precommit` al commit e `just prepush` al push: non rilanciarli a mano subito prima di commit/push. `tools/scripts/finish-task.sh` non li duplica.
+
 ## Commit
 
 Formato:
@@ -54,10 +79,13 @@ Formato:
 
 Prefissi ammessi: `feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `chore`, `build`, `ci`, `revert`.
 
-Mantieni `tmp/commit-message.md` aggiornato durante il lavoro. Azzeralo quando parti da `git status` pulito; integralo altrimenti. `tmp/` è gitignored.
+Mantieni `tmp/commit-message.md` aggiornato durante il lavoro. Azzeralo quando parti da `git status` pulito; integralo o correggilo altrimenti. `tmp/` è gitignored. Il messaggio deve descrivere l'intero diff, non solo l'ultima modifica, e non usa hard wrap.
+
+Il commit non è automatico a fine iterazione. L'agente prepara la bozza e crea commit, push e PR solo quando l'utente lo richiede esplicitamente; nel checkout principale il commit resta all'utente. Quando autorizzato, usa `tools/scripts/finish-task.sh` su un branch dedicato.
 
 ## Pull request
 
+- Apri una PR solo dopo consenso esplicito a commit, push e PR.
 - Una PR per task; niente refactor non correlati.
 - Descrivi cosa cambia, perché, i test eseguiti e i rischi residui.
 - Includi l'output verbatim dei comandi di gate.

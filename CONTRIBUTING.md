@@ -10,12 +10,12 @@ Grazie per contribuire a `py-boilerplate`. Il progetto è ottimizzato per un flu
 
 ## Flusso di lavoro
 
-- Apri un branch dedicato per ogni task. Non lavorare su `main`.
+- Il modello strutturato è un task = un branch = una PR. Apri un branch dedicato per ogni task. Nel checkout principale, quando non chiedi branch o PR, si può lavorare su `main` e lasciare il commit al maintainer (vedi [`WORKFLOWS.md`](docs/development/WORKFLOWS.md) § Workspace di sviluppo principale).
 - Scrivi prima il test che descrive il comportamento e guardalo fallire.
 - Implementa il minimo che rende il test verde, poi rifattorizza.
 - Esegui `just precommit` durante il lavoro e `just prepush` prima della consegna.
 - Aggiorna ADR, PDR e documentazione nello stesso commit del codice.
-- Apri una PR piccola, con il report dei comandi eseguiti.
+- Quando il task è su un branch dedicato e hai il consenso esplicito, apri una PR piccola con il report dei comandi eseguiti.
 
 La procedura completa, inclusi fast path docs-only, Definition of Done e gestione delle PR, è in [`docs/development/WORKFLOWS.md`](docs/development/WORKFLOWS.md).
 
@@ -32,6 +32,8 @@ Le convenzioni dettagliate sono in [`docs/development/CODING.md`](docs/developme
 
 ## Commit
 
+Crea commit, push e PR solo su richiesta esplicita. Mantieni il messaggio proposto in `tmp/commit-message.md` durante il lavoro: descrive l'intero diff e non usa hard wrap.
+
 Usa un prefisso convenzionale e una lista puntata con il dettaglio:
 
 ```text
@@ -41,8 +43,6 @@ feat: aggiunge il caso d'uso hello-world alla superficie MCP
 - riusa il caso d'uso e la tassonomia errori condivisa
 - aggiunge integration test in-memory e contract test cross-surface
 ```
-
-Mantieni il messaggio proposto in `tmp/commit-message.md` durante il lavoro.
 
 ## Review
 

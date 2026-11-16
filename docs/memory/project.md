@@ -26,6 +26,13 @@
 - `docs/init/` è congelato.
 - Il maintainer in `CODEOWNERS` è il decisore finale.
 
+## Workflow
+
+- Modello strutturato: un task = un branch = una PR, con naming `<tipo>/<issue>-<slug>` oppure `<tipo>/<slug>` per task molto piccoli; i tipi sono quelli conventional.
+- Nel checkout principale `/home/dati/workspace/py-boilerplate`, quando l'utente non chiede branch o PR, si lavora sul working tree corrente (`main`) e il commit resta all'utente; l'agente non crea branch autonomi né PR.
+- L'agente mantiene `tmp/commit-message.md` come bozza del messaggio (prefisso conventional, sintesi in italiano, riga vuota, lista puntata, niente hard wrap) e non crea commit, push o PR senza richiesta esplicita.
+- Gli hook versionati eseguono `just precommit` al commit e `just prepush` al push; non vanno duplicati a mano. `tools/scripts/finish-task.sh` si usa solo su branch dedicato e con consenso esplicito.
+
 ## Stato sintetico
 
 - Dominio, contratti, CLI, API, MCP, UI web, design system, tema e package check sono implementati e verdi.

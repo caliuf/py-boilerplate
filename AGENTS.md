@@ -10,15 +10,16 @@ I file in [`docs/init/`](docs/init/) sono il blueprint congelato del boilerplate
 
 ## Start here
 
-1. Leggi `docs/PROJECT.md` e `docs/INDEX.md`.
-2. Leggi il README del bounded context o dell'entrypoint che modificherai; per la UI leggi `apps/web/README.md`.
-3. Leggi le ADR e le PDR attive pertinenti.
-4. Leggi `docs/memory/project.md` e `docs/memory/environment.md`.
-5. Usa solo le recipe root-level di `just` per costruire, testare e validare.
+1. Esegui `tools/scripts/agent-briefing.sh` per il dump di contesto a inizio task; `--no-prs` salta la parte GitHub. È read-only.
+2. Leggi `docs/PROJECT.md` e `docs/INDEX.md`.
+3. Leggi il README del bounded context o dell'entrypoint che modificherai; per la UI leggi `apps/web/README.md`.
+4. Leggi le ADR e le PDR attive pertinenti.
+5. Leggi `docs/memory/project.md` e `docs/memory/environment.md`; per task su tooling, workflow o adozione leggi anche `docs/memory/corrections.md`.
+6. Usa solo le recipe root-level di `just` per costruire, testare e validare.
 
 ## Working rules
 
-- Un task = un branch o worktree. Non lavorare direttamente su `main` salvo richiesta esplicita del maintainer.
+- Il modello strutturato è un task = un branch = una PR. Nel checkout principale, quando `realpath $(pwd)` è `/home/dati/workspace/py-boilerplate` e l'utente non chiede esplicitamente un branch o una PR, lavora sul working tree corrente (di norma `main`), non creare branch autonomi e lascia il commit all'utente. Per lavoro isolato o parallelo usa un worktree. Dettagli: `docs/development/WORKFLOWS.md` § Branching, PR e worktree.
 - Prima di iniziare, verifica che i gate siano verdi: `just prepush`. Non iniziare lavoro nuovo su un codebase sotto soglia.
 - Lavora test-first: red → green → refactor. Per un bug, il primo commit è un regression test che fallisce.
 - Lascia il codice che tocchi migliore di come l'hai trovato, misurato dai gate. Non fare refactor o upgrade non correlati.
@@ -34,7 +35,7 @@ I file in [`docs/init/`](docs/init/) sono il blueprint congelato del boilerplate
 - Il package manager web è npm: non usare `pnpm`, `yarn` o `bun`. Il hook `preinstall` (`tools/scripts/require-npm.mjs`) blocca gli altri manager; non committare lockfile o workspace file diversi da `package-lock.json`.
 - Prima di usare un'API di libreria, verifica che esista nella versione installata leggendo sorgenti, stub o documentazione. Non fidarti della memoria.
 - Non introdurre una decisione di prodotto senza PDR, né una decisione architetturale senza ADR, nello stesso commit del codice.
-- Mantieni `tmp/commit-message.md` con il messaggio proposto per il lavoro in corso. Azzeralo quando parti da `git status` pulito; integralo altrimenti. `tmp/` è gitignored.
+- Mantieni `tmp/commit-message.md` con il messaggio proposto per il lavoro in corso. Azzeralo quando parti da `git status` pulito; integralo o correggilo altrimenti. `tmp/` è gitignored. Il messaggio segue il formato di `docs/development/WORKFLOWS.md` § Commit: prefisso conventional, una riga riassuntiva in italiano, riga vuota, lista puntata con il dettaglio del diff. Non creare commit, non fare push e non aprire PR senza richiesta esplicita dell'utente.
 
 ## CodeScene
 
@@ -67,6 +68,7 @@ Quando l'MCP `codescene` è connesso, Code Health è l'autorità per la maintain
 - Durante lo sviluppo esegui `just precommit`.
 - Prima della consegna esegui `just prepush`.
 - Per la pipeline completa esegui `just ci`.
+- Non rilanciare `just precommit` o `just prepush` subito prima di `git commit` o `git push`: gli hook versionati li eseguono già. Se hai il consenso esplicito a commit, push e PR, usa `tools/scripts/finish-task.sh` su un branch dedicato; altrimenti fermati al report e lascia le modifiche nel working tree.
 - Se un comando richiesto non può girare, riporta il motivo esatto e l'output.
 - Non dichiarare che un check è passato senza averlo eseguito. Nel report finale cita l'output effettivo.
 
@@ -81,9 +83,12 @@ Quando l'MCP `codescene` è connesso, Code Health è l'autorità per la maintain
 
 ## Git e GitHub
 
+- Usa `git --no-pager` per ogni comando Git: un pager interattivo blocca la shell dell'agente.
 - Non usare comandi Git distruttivi. Non riscrivere commit o fare force-push senza richiesta esplicita.
 - Non cancellare file non correlati o untracked.
-- Messaggi di commit in italiano, con prefisso convenzionale (`feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `chore`, `build`, `ci`, `revert`), una riga vuota e una lista puntata con il dettaglio del diff.
+- Sposta o rinomina i file con `git mv`, mai cancellando e ricreando il file, così Git registra la rinomina e la cronologia resta leggibile con `git log --follow` e `git blame`. Quando possibile tieni un movimento puro in un commit dedicato, separato dalle modifiche di contenuto.
+- Messaggi di commit in italiano, con prefisso convenzionale (`feat`, `fix`, `refactor`, `perf`, `test`, `docs`, `chore`, `build`, `ci`, `revert`), una riga riassuntiva, riga vuota e una lista puntata con il dettaglio del diff. Il messaggio proposto vive in `tmp/commit-message.md`; niente hard wrap.
+- Non creare commit, non fare push e non aprire PR, remote o modifiche alle impostazioni GitHub senza richiesta esplicita dell'utente. Quando autorizzato, usa `tools/scripts/finish-task.sh` solo su un branch dedicato.
 - Un bug fix porta un regression test. Una feature porta test e documentazione.
 - Apri PR piccole; non mescolare refactor non correlati.
 - Usa `gh` per PR, issue e check. Per i comandi di sola lettura vedi [`docs/development/GITHUB-CLI.md`](docs/development/GITHUB-CLI.md).
@@ -99,4 +104,5 @@ Riporta:
 5. risultati di sicurezza, analisi statica, web check, Playwright e CodeScene;
 6. ADR/PDR e documentazione aggiornate;
 7. versione Python e modifiche a dipendenze/lockfile;
-8. rischi residui o domande aperte.
+8. rischi residui o domande aperte;
+9. messaggio di commit proposto in `tmp/commit-message.md`, in un code block.
