@@ -2,13 +2,13 @@
 # `mise install` installs everything; `just doctor` verifies.
 # Python itself is pinned in .python-version and installed by uv.
 [tools]
-node = "26.5.0"
-uv = "0.11.26"
-just = "1.58.0"
-direnv = "2.37.1"
+node = "26.13.1"
+uv = "0.13.8"
+just = "1.59.0"
+direnv = "2.38.2"
 gitleaks = "8.30.1"
 actionlint = "1.7.12"
-zizmor = "1.30.0"
+zizmor = "1.32.0"
 lychee = "0.24.2"
 shellcheck = "0.11.0"
 "aqua:crate-ci/typos" = "1.52.2"

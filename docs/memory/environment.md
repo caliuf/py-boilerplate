@@ -14,20 +14,20 @@
 | Componente | Versione |
 |---|---|
 | Python | 3.14.6 (pinnata); minimo 3.14 |
-| Node | 26.5.0 (Active LTS; UI, Playwright e tooling documentale) |
+| Node | 26.13.1 (Active LTS; UI, Playwright e tooling documentale) |
 | cspell | 10.5.1 (npm, con dizionario italiano 3.1.7) |
 | Playwright | 1.65.1 (Chromium in cache utente) |
 | React / Vite / TypeScript | 19.3.1 / 8.3.8 / 7.0.2 |
 | Tailwind CSS / @tailwindcss/vite | 4.3.5 / 4.3.5 |
-| shadcn / Base UI / Lucide / Sonner | 4.23.0 / 1.9.0 / 1.73.0 / 2.0.8 |
+| shadcn / Base UI / Lucide / Sonner | 4.23.0 / 1.9.0 / 1.74.0 / 2.0.8 |
 | Biome / Oxlint / Vitest | 2.6.8 / 1.94.0 / 5.1.0 |
 | Testing Library / jsdom / axe-core Playwright | 16.3.3 / 31.0.1 / 4.14.0 |
-| uv | 0.11.26 |
-| just | 1.58.0 |
-| direnv | 2.37.1 |
+| uv | 0.13.8 |
+| just | 1.59.0 |
+| direnv | 2.38.2 |
 | gitleaks | 8.30.1 |
 | actionlint | 1.7.12 |
-| zizmor | 1.30.0 |
+| zizmor | 1.32.0 |
 | lychee | 0.24.2 |
 | shellcheck | 0.11.0 |
 
