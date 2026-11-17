@@ -2,7 +2,7 @@
 
 ## Versioni supportate
 
-Il progetto supporta Python 3.13 e 3.14. La versione pinnata in `.python-version` è quella usata da sviluppo e CI principale. Le versioni fuori dal range dichiarato in `pyproject.toml` non ricevono fix di sicurezza.
+Il progetto supporta Python 3.14. La versione pinnata in `.python-version` è quella usata da sviluppo e CI principale. Le versioni fuori dal range dichiarato in `pyproject.toml` non ricevono fix di sicurezza.
 
 ## Segnalare una vulnerabilità
 

@@ -12,7 +12,7 @@ Il progetto nasce come derivazione Python di `ts-boilerplate`. Serve un toolchai
 
 Adottiamo:
 
-- Python minimo 3.13, pinnato a 3.14.5 in `.python-version`; CI su 3.13 e 3.14.
+- Python minimo 3.14, pinnato a 3.14.6 in `.python-version`; CI su 3.14.
 - `uv` come unico gestore di progetto, environment, Python e lockfile. `uv.lock` è versionato.
 - `pyproject.toml` come unico manifest; build backend Hatchling.
 - Ruff come formatter e linter, con regole selezionate e motivazione esplicita.

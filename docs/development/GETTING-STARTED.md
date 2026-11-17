@@ -11,7 +11,7 @@ Servono:
 - `uv` e `just`; `just install` li installa via mise.
 - `direnv` per il caricamento dell'environment.
 - `gh` per le operazioni GitHub.
-- Node 24 e npm per la UI web e cspell.
+- Node 26 e npm per la UI web e cspell.
 - Su Debian/Ubuntu, i pacchetti di build elencati nella recipe `install`.
 
 Se `mise` non è installato, segui la documentazione ufficiale e riapri la shell. `just` può essere installato anche con il package manager della distribuzione, ma la versione autorevole è quella in `.mise.toml`.

@@ -52,10 +52,10 @@ Non esistono servizi separati, code, database o job schedulati. Le superfici con
 
 ## Versioni e dipendenze
 
-- `requires-python = ">=3.13"`.
-- Versione pinnata in `.python-version`: `3.14.5`.
-- CI: matrix Python 3.13 e 3.14.
-- Node: `24.19.0`, richiesto per la UI, Playwright e cspell.
+- `requires-python = ">=3.14"`.
+- Versione pinnata in `.python-version`: `3.14.6`.
+- CI: Python 3.14.
+- Node: `26.5.0` (Active LTS), richiesto per la UI, Playwright e cspell.
 - Gestione dipendenze Python: `uv` con `uv.lock` versionato; nessun `requirements.txt` manuale.
 - Gestione dipendenze web: npm workspace con `package-lock.json` versionato.
 - Dipendenze runtime Python: FastAPI, MCP Python SDK, Pydantic, pydantic-settings, structlog, Uvicorn.

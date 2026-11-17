@@ -15,7 +15,7 @@ La pipeline è divisa in tre workflow:
 - `ci.yml` su pull request, push su `main` e dispatch manuale:
   - `quality`: Ruff format/lint, shellcheck, mypy, deptry, lock check, Import Linter, docs, workflow, secrets e security.
   - `integration-and-coverage`: suite unit, integration, contract, smoke, coverage e package check.
-  - `python-compatibility`: matrix 3.13 e 3.14.
+  - `python-compatibility`: matrix 3.14.
   - `e2e`: processi reali per CLI, API e MCP.
   - `dependency-review`: solo su PR pubbliche.
 - `security.yml` settimanale o manuale: CodeQL per Python e gitleaks sulla storia completa.

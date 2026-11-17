@@ -273,15 +273,15 @@ coverage-raise:
 smoke:
     uv run pytest tests/integration/test_smoke.py -q
 
-# Compatibilità con tutte le versioni Python supportate
-test-compat:
+# Compatibilità Python: stessa sequenza del job CI, per versione
+test-compat version="3.14":
     #!/usr/bin/env bash
     set -euo pipefail
-    uv python install 3.13 3.14
-    for version in 3.13 3.14; do
-      echo "==> Python ${version}"
-      UV_PROJECT_ENVIRONMENT=".venv-${version}" uv run --python "${version}" pytest tests/unit tests/integration tests/contract -q
-    done
+    export UV_PYTHON="{{ version }}"
+    export UV_PROJECT_ENVIRONMENT=".venv-{{ version }}"
+    uv python install "${UV_PYTHON}"
+    uv sync --locked
+    just test-unit test-integration test-contract
 
 # Build e installazione del wheel in un virtualenv pulito
 package-check:

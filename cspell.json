@@ -16,7 +16,7 @@
     "dist/**",
     "build/**",
     "docs/init/**",
-    "node_modules/**",
+    "**/node_modules/**",
     "tmp/**",
     "uv.lock",
     "package-lock.json",

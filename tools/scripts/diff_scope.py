@@ -29,7 +29,7 @@ def _git(args: Sequence[str]) -> str | None:
             timeout=30,
             check=False,
         )
-    except (OSError, subprocess.SubprocessError):
+    except OSError, subprocess.SubprocessError:
         return None
     if completed.returncode != 0:
         return None

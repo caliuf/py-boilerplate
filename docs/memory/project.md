@@ -18,7 +18,7 @@
 
 ## Vincoli
 
-- Python minimo 3.13; pin 3.14.5; CI su 3.13 e 3.14.
+- Python minimo 3.14; pin 3.14.6; CI su 3.14.
 - `uv` gestisce Python e `uv.lock`; npm gestisce il workspace web e `package-lock.json`.
 - UI React/Vite separata con design system Tailwind 4 + shadcn/Base UI, tema chiaro/scuro e gate UI; nessun database, coda o worker.
 - Nessuna chiamata a servizi esterni a runtime.

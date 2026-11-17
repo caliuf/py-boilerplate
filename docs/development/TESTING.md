@@ -74,7 +74,7 @@ Non scrivere test tautologici o senza assertion. La coverage è un segnale, non 
 | `just test-e2e` | Solo E2E |
 | `just smoke` | Percorso pubblico minimo |
 | `just coverage` | Suite non-E2E con coverage |
-| `just test-compat` | Suite su Python 3.13 e 3.14 |
+| `just test-compat` | Suite su Python 3.14 con la stessa sequenza del job CI |
 | `just test-related` | Unit se ci sono modifiche Python staged |
 | `just web-test` | Vitest su contratti, hook e componenti |
 | `just web-check` | Biome, Oxlint, TypeScript e Vitest |

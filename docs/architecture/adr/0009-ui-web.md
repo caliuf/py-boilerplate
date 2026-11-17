@@ -24,7 +24,7 @@ Aggiungiamo `apps/web` come app React 19 + Vite 8 + TypeScript 7:
 
 ## Conseguenze
 
-- Node 24 diventa necessario per sviluppo, test e build della UI (era già necessario per cspell).
+- Node 26 (Active LTS) diventa necessario per sviluppo, test e build della UI (era già necessario per cspell).
 - La suite CI `e2e` installa Chromium e verifica il flusso keyboard-first e il percorso del bottone.
 - La coverage Python non misura il codice DOM; la UI è coperta da Playwright e dai test Vitest dei contratti client.
 - La UI non ha SSR, autenticazione, routing o stato globale: sono fuori scope finché non esiste una PDR che li richieda.

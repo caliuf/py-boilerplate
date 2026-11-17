@@ -2,11 +2,11 @@
 
 ## Python
 
-- `requires-python = ">=3.13"` in `pyproject.toml`.
-- `.python-version` pinna `3.14.5`, la versione usata da sviluppo e CI principale.
-- La CI testa 3.13 e 3.14. Un test locale su una sola versione non sostituisce la matrix.
+- `requires-python = ">=3.14"` in `pyproject.toml`.
+- `.python-version` pinna `3.14.6`, la versione usata da sviluppo e CI principale.
+- La CI testa Python 3.14, la stessa versione pinnata in `.python-version`.
 - `uv` gestisce l'installazione di Python, l'environment e il lockfile. Non creare un secondo environment con `venv`, `virtualenv` o `conda`.
-- Node 24 e npm gestiscono la UI web, Playwright, Biome e cspell. Il workspace npm contiene `apps/web`.
+- Node 26 (Active LTS) e npm gestiscono la UI web, Playwright, Biome e cspell. Il workspace npm contiene `apps/web`.
 
 ## Web
 

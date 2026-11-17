@@ -2,7 +2,7 @@
 # `mise install` installs everything; `just doctor` verifies.
 # Python itself is pinned in .python-version and installed by uv.
 [tools]
-node = "24.19.0"
+node = "26.5.0"
 uv = "0.11.26"
 just = "1.58.0"
 direnv = "2.37.1"

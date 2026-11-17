@@ -3,15 +3,14 @@ name = "py-boilerplate"
 version = "0.1.0"
 description = "Boilerplate Python per progetti sviluppati interamente tramite agenti AI"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 classifiers = [
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.13",
   "Programming Language :: Python :: 3.14",
   "Typing :: Typed",
 ]
 dependencies = [
-  "fastapi>=0.162.7,<0.163",
+  "fastapi>=0.163.1,<0.164",
   "mcp>=2.3.0,<3",
   "pydantic>=2.14.3,<3",
   "pydantic-settings>=2.16.3,<3",
@@ -28,7 +27,7 @@ dev = [
   "import-linter>=2.16,<3",
   "mypy>=2.4.1,<3",
   "pip-audit>=2.10.1,<3",
-  "pymarkdownlnt>=0.9.41,<0.10",
+  "pymarkdownlnt>=0.9.42,<0.10",
   "pytest>=9.2.0,<10",
   "pytest-asyncio>=1.5.0,<2",
   "pytest-cov>=7.1.0,<8",
@@ -48,7 +47,7 @@ build-backend = "hatchling.build"
 packages = ["src/py_boilerplate"]
 
 [tool.ruff]
-target-version = "py313"
+target-version = "py314"
 line-length = 100
 src = ["src", "tests", "tools"]
 exclude = [".kilo"]
@@ -83,7 +82,7 @@ ignore = [
 "src/py_boilerplate/entrypoints/**" = ["S104"]
 
 [tool.mypy]
-python_version = "3.13"
+python_version = "3.14"
 strict = true
 warn_unreachable = true
 show_error_codes = true

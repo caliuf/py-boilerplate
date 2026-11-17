@@ -51,7 +51,7 @@ def _run(args: Sequence[str], timeout: float = 15) -> subprocess.CompletedProces
             timeout=timeout,
             check=False,
         )
-    except (OSError, subprocess.SubprocessError):
+    except OSError, subprocess.SubprocessError:
         return None
 
 

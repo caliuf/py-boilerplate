@@ -27,7 +27,6 @@ Il ruleset richiede:
 |---|---|---|
 | `quality` | `ci.yml` | Formattazione, lint, typing, architettura, docs, workflow, secrets, security |
 | `integration-and-coverage` | `ci.yml` | Suite non-E2E, coverage, package check |
-| `python-compatibility (3.13)` | `ci.yml` | Matrix Python 3.13 |
 | `python-compatibility (3.14)` | `ci.yml` | Matrix Python 3.14 |
 | `e2e` | `ci.yml` | Processi reali CLI, API e MCP, più Playwright sulla UI |
 | `dependency-review` | `ci.yml` | Review delle dipendenze sulle PR pubbliche |
